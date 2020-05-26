@@ -1,5 +1,12 @@
 ## Command
 
+### Install python module
+```
+pip install \
+  --index-url  http://10.156.2.65/ipf3-offshore/pypi/ \
+  --trusted-host 10.156.2.65 -r requirements.txt
+```
+
 ```bash
 $ ./app.py [--text <text phrase>] \
   [--id <mantis ticket id>] \
@@ -33,15 +40,19 @@ $ ./app.py --show-id
 ```
 
 ## Build Docker image
-```
+```bash
 $ docker build -t simapp .
 ```
 
 ## Using Docker image to calculate similarity
 
-run.shを参照ください。
+以下二つのフォルダをつくります。
++ csv fileをフォルダcsvsに置いておきます。
++ tfhub_modulesフォルダはtensorflow hub moduleの格納場所。
 
-```
+```bash
+$ mkdir csvs
+$ mkdir tfnub_modules
 $ docker run --rm \
   --name simapp \
   -v $(pwd)/csvs:/csvs \
@@ -51,3 +62,5 @@ $ docker run --rm \
   --csvs /csvs/CV2K_App.csv  \
   --column '詳細'
 ```
+
+run.shを参照ください。
