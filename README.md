@@ -47,8 +47,8 @@ $ docker build -t simapp .
 ## Using Docker image to calculate similarity
 
 以下二つのフォルダをつくります。
-+ csv fileをフォルダcsvsに置いておきます。
-+ tfhub_modulesフォルダはtensorflow hub moduleの格納場所。
++ csv fileをフォルダ`csvs`に置いておきます。
++ `tfhub_modules`フォルダはtensorflow hub moduleの格納場所。
 
 ```bash
 $ mkdir csvs
