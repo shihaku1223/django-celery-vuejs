@@ -4,7 +4,18 @@
     <div class='container'>
       <side-bar/>
       <div class='content'>
-        I am content
+        <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
+        <text-input
+          placeHolder='mantis ticket id'/>
+
+        <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
+        <text-input
+          placeHolder='text phrase'/>
+
+        <click-button
+          text='calculate'
+          @click='onClick'/>
+
         <!--<router-view></router-view> -->
       </div>
     </div>
@@ -31,6 +42,8 @@
 
 import NavigationHeaderBar from '@/components/NavigationHeaderBar'
 import SideBar from '@/components/SideBar'
+import TextInput from '@/components/TextInput'
+import ClickButton from '@/components/ClickButton'
 
 export default {
 
@@ -38,9 +51,18 @@ export default {
     taskData: 'Hello'
   }),
 
+  methods: {
+    onClick(e) {
+      console.log('calculate button click')
+      e.preventDefault()
+    }
+  },
+
   components: {
     NavigationHeaderBar,
     SideBar,
+    TextInput,
+    ClickButton,
   }
 
 }
