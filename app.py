@@ -132,7 +132,7 @@ if __name__ == '__main__':
     """
 
     print('loading hub')
-    embed = hub.load("https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
+    embed = hub.load("http://10.121.88.5:9000/universal-sentence-encoder-multilingual_3.tar.gz")
 
     print('reading csv files')
     if args.csvs is not None:
