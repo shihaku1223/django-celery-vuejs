@@ -1,12 +1,12 @@
-## Command
 
-### Install python module
+## Install needed python modules
 ```
 pip install \
   --index-url  http://10.156.2.65/ipf3-offshore/pypi/ \
   --trusted-host 10.156.2.65 -r requirements.txt
 ```
 
+## Command
 ```bash
 $ ./app.py [--text <text phrase>] \
   [--id <mantis ticket id>] \
