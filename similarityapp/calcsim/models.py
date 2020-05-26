@@ -1,3 +1,30 @@
 from django.db import models
+from enum import Enum
 
-# Create your models here.
+class TaskStatus(Enum):
+    CREATED = 1
+    RUNNING = 2
+    INTERRUPTED = 3
+    STOPPED = 4
+    SUCCESS = 5
+    FAILED = 6
+
+TaskStatusMap = {
+    TaskStatus.CREATED: 'created',
+    TaskStatus.RUNNING: 'running',
+    TaskStatus.INTERRUPTED: 'interrupted',
+    TaskStatus.SUCCESS: 'success',
+    TaskStatus.FAILED: 'failed',
+    TaskStatus.STOPPED: 'stopped',
+}
+
+def TaskStatusToString(status):
+    return TaskStatusMap[status]
+
+class CalcTask(models.Model):
+
+    task_id = models.CharField(max_length=32, blank=True, unique=True)
+
+    status = models.CharField(max_length=20)
+
+    timestamp = models.DateTimeField(auto_now_add=True)
