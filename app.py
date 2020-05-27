@@ -57,6 +57,31 @@ def calculateByTicketId(_id: int, ticketsDict: dict, column: str):
     return calculate(texts, idList,
         ticketsDict, column)
 
+def calculateByTicketIdwithProject(_id: int, issues: list, column: str):
+
+    issue = mantisConnector.getIssue(_id)
+    texts = [issue[column]]
+    idList = [_id]
+
+    ticketsDict = {}
+    for issue in issues:
+        ticketsDict[issue['id']] = issue
+
+    return calculate(texts, idList,
+        ticketsDict, column)
+
+def calculateByTextwithProject(text: str, issues: list, column: str):
+
+    texts = [text]
+    idList = [-1]
+
+    ticketsDict = {}
+    for issue in issues:
+        ticketsDict[issue['id']] = issue
+
+    return calculate(texts, idList,
+        ticketsDict, column)
+
 def showResult(result, numbers: int):
 
     mantisURL='http://10.156.2.84/mantis/ipf3/app/view.php?id={}'
@@ -102,14 +127,11 @@ if __name__ == '__main__':
     parser.add_argument('--user', type=str,
         help='Mantis User')
 
-    """
     parser.add_argument('--password', type=str,
         help='Mantis Password')
 
     parser.add_argument('--project', type=str,
         help='specify the project name to search from')
-
-    """
 
     parser.add_argument('--csvs', type=str, action='append',
         help='Mantis csv')
@@ -122,17 +144,27 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    """
+    print('loading hub')
+    embed = hub.load("http://10.121.88.5:9000/universal-sentence-encoder-multilingual_3.tar.gz")
+
     if args.project is not None:
         url = "http://osoft-de-c.olympus.co.jp/mantis/ipf3/app/api/soap/mantisconnect.php?wsdl"
         mantisConnector = Connector(url, args.user, args.password)
+        mantisConnector.connect()
 
         projectId = mantisConnector.getProjectId(args.project)
-        issues = mantisConnector.getIssuesByFilter(projectId, 11092, 0, 0)
-    """
+        issues = mantisConnector.getProjectIssues(projectId)
+        #issues = mantisConnector.getIssuesByFilter(projectId, 11092, 0, 0)
 
-    print('loading hub')
-    embed = hub.load("http://10.121.88.5:9000/universal-sentence-encoder-multilingual_3.tar.gz")
+        if args.id is not None:
+            result = calculateByTicketIdwithProject(
+                args.id, issues, args.column)
+        elif args.text is not None:
+            result = calculateByTextwithProject(
+                args.text, issues, args.column)
+
+        showResult(result, args.nums)
+        sys.exit(0)
 
     print('reading csv files')
     if args.csvs is not None:
