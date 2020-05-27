@@ -43,7 +43,16 @@ class TaskCreateView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIV
     def post(self, request, *args, **kwargs):
         data = {}
 
-        r =  executeCalculation.delay()
-        data['task_id'] = r.id
+        projectName = request.data['projectName']
+        mantisId = request.data['mantisId']
+        textPhrase = request.data['textPhrase']
+        print(projectName)
+        print(mantisId)
+        print(textPhrase)
+
+        result =  executeCalculation.delay(
+            mantisId, textPhrase, projectName)
+        print(result.get())
+        data['result'] = 'test'
 
         return Response(data)

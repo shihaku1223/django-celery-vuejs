@@ -8,9 +8,8 @@ from django.conf import settings
 os.environ.setdefault('DJANGO_SETTINGS_MODULE','similarityapp.settings')
 app = Celery('similarityapp')
 
-
 # Using a String here means the worker will always find the configuration information
-app.config_from_object('django.conf:settings')
+app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 @app.task(bind=True)

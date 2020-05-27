@@ -1,6 +1,10 @@
 <template>
 
-  <input class="hk-input" :placeholder="placeHolder" />
+  <input class="hk-input"
+    ref="input"
+    :value="value"
+    :placeholder="placeHolder"
+    @input="update"/>
 
 </template>
 
@@ -25,16 +29,16 @@ export default {
     href: {
       type: String,
       default: "#hello"
-    }
+    },
+    value:String
   },
 
   computed: {
   },
 
   methods: {
-    onClick(e) {
-      this.$emit('click')
-      e.preventDefault()
+    update() {
+      this.$emit('input', this.$refs.input.value)
     }
   }
 }

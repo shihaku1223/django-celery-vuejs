@@ -27,6 +27,18 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+MANTIS_HOST = 'http://osoft-de-c.olympus.co.jp/mantis/ipf3/app/api/soap/mantisconnect.php?wsdl'
+MANTIS_USER = 'user'
+MANTIS_PASS = 'pass'
+
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost'
+CELERY_RESULT_BACKEND = 'django-db'
+#CELERY_RESULT_BACKEND = 'db+sqlite:///results.sqlite'
+#CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Tokyo'
 
 # Application definition
 
@@ -37,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_results',
     'rest_framework',
     'corsheaders',
     'calcsim',

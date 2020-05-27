@@ -5,12 +5,15 @@
       <side-bar/>
       <div class='content'>
         <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
-        <text-input
+        <text-input v-model="mantisId"
           placeHolder='mantis ticket id'/>
+        <text-input v-model="textPhrase"
+          placeHolder='text phrase'/>
 
         <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
-        <text-input
-          placeHolder='text phrase'/>
+       
+        <text-input v-model="projectName"
+          placeHolder='target project name'/>
 
         <click-button
           text='calculate'
@@ -48,13 +51,26 @@ import ClickButton from '@/components/ClickButton'
 export default {
 
   data: () => ({
-    taskData: 'Hello'
+    taskData: 'Hello',
+    projectName: '',
+    mantisId: '',
+    textPhrase: '',
   }),
 
   methods: {
     async onClick(e) {
       console.log('calculate button click')
-      const p = await this.axios.post('/calcsim')
+      console.log(this.mantisId)
+      console.log(this.projectName)
+      console.log(this.textPhrase)
+
+      let postData = {
+        mantisId: this.mantisId,
+        projectName: this.projectName,
+        textPhrase: this.textPhrase
+      }
+
+      const p = await this.axios.post('/calcsim', postData)
       console.log(p.data)
     }
   },
