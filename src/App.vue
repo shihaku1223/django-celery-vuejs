@@ -52,9 +52,10 @@ export default {
   }),
 
   methods: {
-    onClick(e) {
+    async onClick(e) {
       console.log('calculate button click')
-      e.preventDefault()
+      const p = await this.axios.post('/calcsim')
+      console.log(p.data)
     }
   },
 

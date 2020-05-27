@@ -1,4 +1,4 @@
 export default {
-  baseURL: 'http://10.121.88.122:8000/api',
+  baseURL: 'http://10.121.84.96:8000/api',
   timeout: 60000,
 }
