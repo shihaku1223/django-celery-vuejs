@@ -10,10 +10,13 @@ from similarityapp.app import calculateByTicketIdwithProject
 from similarityapp.app import calculateByTextwithProject
 
 @shared_task(bind=True)
-def executeCalculation(self, mantisId, textPhrase, projectName, numbers=130):
+def executeCalculation(self, mantisId,
+        textPhrase, projectName, mantisUrl,
+        numbers=130, method='id'):
 
+    wsdlUrl = mantisUrl + '/api/soap/mantisconnect.php?wsdl'
     mantisConnector = Connector(
-        MANTIS_HOST, MANTIS_USER, MANTIS_PASS)
+        wsdlUrl, MANTIS_USER, MANTIS_PASS)
     mantisConnector.connect()
 
     projectId = mantisConnector.getProjectId(projectName)
@@ -32,8 +35,12 @@ def executeCalculation(self, mantisId, textPhrase, projectName, numbers=130):
 
     print('calculate')
     try:
-        result = calculateByTicketIdwithProject(
-            mantisId, issue, issues, 'description')
+        if method == 'id':
+            result = calculateByTicketIdwithProject(
+                mantisId, issue, issues, 'description')
+        elif method == 'text':
+            result = calculateByTextwithProject(
+                textPhrase, issues, 'description')
         print(result)
 
         task.status = TaskStatusToString(
