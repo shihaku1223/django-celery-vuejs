@@ -49,11 +49,13 @@ class TaskCreateView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIV
         numberToShow = request.data['numberToShow']
         mantisUrl = request.data['mantisUrl']
         method = request.data['method']
+        column = request.data['column']
 
         print(projectName)
         print(mantisId)
         print(textPhrase)
         print(mantisUrl)
+        print(column)
 
         result =  executeCalculation.delay(
             mantisId,
@@ -61,8 +63,8 @@ class TaskCreateView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIV
             projectName,
             mantisUrl,
             numberToShow,
-            method)
-        print(result.get())
+            method,
+            column)
         data['result'] =  result.get()
 
         return Response(data)

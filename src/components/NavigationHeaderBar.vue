@@ -1,5 +1,6 @@
 <template>
-  <div class='navigation items-stretch bg-purple shadow-outer-1'>I am header
+  <div class='navigation items-stretch bg-purple shadow-outer-1'>
+    Similarity Calculator
   </div>
 
 </template>

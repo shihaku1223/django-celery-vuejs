@@ -12,7 +12,7 @@ from similarityapp.app import calculateByTextwithProject
 @shared_task(bind=True)
 def executeCalculation(self, mantisId,
         textPhrase, projectName, mantisUrl,
-        numbers=130, method='id'):
+        numbers=130, method='id', column='summary'):
 
     wsdlUrl = mantisUrl + '/api/soap/mantisconnect.php?wsdl'
     mantisConnector = Connector(
@@ -21,6 +21,7 @@ def executeCalculation(self, mantisId,
 
     projectId = mantisConnector.getProjectId(projectName)
     issues = mantisConnector.getProjectIssues(projectId)
+    #issues = mantisConnector.getIssuesByFilter(projectId, 11092, 0, 0)
 
     taskUUIDStr = executeCalculation.request.id
 
@@ -28,20 +29,16 @@ def executeCalculation(self, mantisId,
         status = TaskStatusToString(TaskStatus.CREATED))
     task.save()
 
+    result = {}
     try:
         issue = mantisConnector.getIssue(mantisId)
-    except:
-        print('no issue found')
 
-    print('calculate')
-    try:
         if method == 'id':
             result = calculateByTicketIdwithProject(
-                mantisId, issue, issues, 'description')
+                mantisId, issue, issues, column)
         elif method == 'text':
             result = calculateByTextwithProject(
-                textPhrase, issues, 'description')
-        print(result)
+                textPhrase, issues, column)
 
         task.status = TaskStatusToString(
             TaskStatus.SUCCESS)
@@ -55,6 +52,7 @@ def executeCalculation(self, mantisId,
     mantisURL='http://10.156.2.84/mantis/ipf3/app/view.php?id={}'
     i = 0
     t = iter(result)
+    print(len(result))
     try:
         while i < numbers:
             key = next(t)
@@ -66,9 +64,6 @@ def executeCalculation(self, mantisId,
             obj['href'] = mantisURL.format(key)
             obj['score'] = '{}'.format(result[key])
             resultList.append(obj)
-
-            print(mantisURL.format(key) +
-                  ' score {}'.format(result[key]))
             i = i + 1
     except StopIteration:
         pass

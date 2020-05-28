@@ -2,7 +2,6 @@
   <div>
     <navigation-header-bar/>
     <div class='container'>
-      <side-bar/>
       <div class='content'>
 
         <div class="w-100 flex">
@@ -34,11 +33,22 @@
           <text-label text='Target Project' />
           <text-input v-model="projectName"
             placeHolder='target project name'/>
+
+          <text-label text='Target Column' />
+          <select-menu
+            v-model="selected"
+            :options="columnOptions" />
+          
         </div>
 
         <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
 
         <div class="w-100 flex">
+          <text-label text='Ticket Number to Show' />
+          <text-input
+            v-model="numberToShow"
+            style="width: 50px;"/>
+
           <div>
             <input type="radio"
               v-model='method'
@@ -58,6 +68,21 @@
             text='calculate'
             @click='onClick'/>
         </div>
+
+        <!-- table -->
+        <div class="dt bg-lightest-silver ba b--silver"
+          style="width: 100%;">
+
+          <score-table-row
+            text="Mantis Ticket Url"
+            score="Score"/>
+
+          <score-table-row v-for="(result, index) in results"
+            :key="index"
+            :url="result.href"
+            :score="result.score"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -73,7 +98,7 @@
 .content {
   position: relative;
   overflow-y: scroll;
-  width: calc(100% - 240px);
+  width: 100%;
   height: calc(100vh - 70px);
 }
 
@@ -86,6 +111,8 @@ import SideBar from '@/components/SideBar'
 import TextInput from '@/components/TextInput'
 import ClickButton from '@/components/ClickButton'
 import TextLabel from '@/components/TextLabel'
+import ScoreTableRow from '@/components/ScoreTableRow'
+import SelectMenu from '@/components/SelectMenu'
 
 export default {
 
@@ -96,6 +123,14 @@ export default {
     mantisId: '46914',
     textPhrase: 'ユーザー設定画面を操作中に、モダコンの接続が切 れて',
     method: 'id',
+    results: [],
+    columnOptions: [
+      { value: 'summary', text: '要約' },
+      { value: 'description', text: '詳細' },
+      { value: 'steps_to_reproduce', text: '再現方法' },
+    ],
+    selected: 'description',
+    numberToShow: '130'
   }),
 
   methods: {
@@ -107,15 +142,17 @@ export default {
       console.log(this.mantisUrl)
 
       let postData = {
-        mantisId: this.mantisId,
+        mantisId: parseInt(this.mantisId),
         projectName: this.projectName,
         textPhrase: this.textPhrase,
-        numberToShow: 130,
+        numberToShow: parseInt(this.numberToShow),
         mantisUrl: this.mantisUrl,
-        method: this.method
+        method: this.method,
+        column: this.selected,
       }
       const p = await this.axios.post('/calcsim', postData)
-      //console.log(p.data)
+      this.results = p.data.result
+      console.log(this.results.length)
     }
   },
 
@@ -125,6 +162,8 @@ export default {
     TextInput,
     ClickButton,
     TextLabel,
+    ScoreTableRow,
+    SelectMenu,
   }
 }
 </script>
