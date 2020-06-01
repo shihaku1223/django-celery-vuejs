@@ -19,7 +19,7 @@ def calculate(texts: list, idList: list, ticketsDict: dict, column: str):
     resultDict = {}
 
     embed = hub.load(
-        "http://10.121.88.5:9000/universal-sentence-encoder-multilingual_3.tar.gz")
+        "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
 
     # put the text of specified ticket
     for __id, ticket in ticketsDict.items():
