@@ -42,7 +42,8 @@ def executeCalculation(self, mantisId,
 
         task.status = TaskStatusToString(
             TaskStatus.SUCCESS)
-    except:
+    except Exception as e:
+        print(e)
         task.status = TaskStatusToString(
             TaskStatus.FAILED)
 

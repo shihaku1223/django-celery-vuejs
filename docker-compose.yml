@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+
+  web:
+    container_name: simapp-web
+    image: simapp:latest
+    ports:
+      - "8080:8080"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - app
+
+  app:
+    container_name: simapp
+    image: simapp_backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - broker
+
+  broker:
+    container_name: rabbit
+    image: rabbitmq:3-management
+    ports:
+      - "5673:15672"

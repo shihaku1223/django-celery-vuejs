@@ -9,3 +9,5 @@ django-cors-headers
 django-cors-middleware
 django-celery-results
 sqlalchemy
+uwsgi
+django-rest-framework

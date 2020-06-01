@@ -2,16 +2,27 @@ FROM python:3.7.7
 
 ENV http_proxy http://proxy.olympus.co.jp:8080
 ENV https_proxy http://proxy.olympus.co.jp:8080
+ENV DIR /var/lib/similarityapp
 
-ADD app.py /
-ADD requirements.txt /
+WORKDIR ${DIR}
+ADD requirements.txt ${DIR}
 
 RUN pip install \
-  --index-url  http://10.156.2.65/ipf3-offshore/pypi/ \
-  --trusted-host 10.156.2.65 -r requirements.txt
+    --index-url  http://10.155.47.34/ipf3-offshore/pypi/ \
+    --trusted-host 10.155.47.34 -r requirements.txt
 
-VOLUME ["/tmp/tfhub_modules"]
+ADD uwsgi.ini ${DIR}
+ADD similarityapp ${DIR}
 
-WORKDIR /
-ENTRYPOINT ["python", "app.py"]
-CMD ["--help"]
+RUN python manage.py collectstatic --noinput
+
+RUN mkdir ${DIR}/celery
+
+ENTRYPOINT []
+CMD python manage.py makemigrations \
+  && python manage.py migrate \
+  && celery worker --detach -A similarityapp \
+      -l info \
+      --pidfile=${DIR}/celery/%n.pid \
+      --logfile=${DIR}/celery/%n%I.log \
+  && uwsgi uwsgi.ini

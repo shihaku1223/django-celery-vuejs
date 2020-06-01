@@ -28,10 +28,10 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 MANTIS_HOST = 'http://osoft-de-c.olympus.co.jp/mantis/ipf3/app/api/soap/mantisconnect.php?wsdl'
-MANTIS_USER = 'user'
-MANTIS_PASS = 'pass'
+MANTIS_USER = 'ipf3-system'
+MANTIS_PASS = 'iY59RsDn'
 
-CELERY_BROKER_URL = 'amqp://guest:guest@localhost'
+CELERY_BROKER_URL = 'amqp://guest:guest@rabbit'
 CELERY_RESULT_BACKEND = 'django-db'
 #CELERY_RESULT_BACKEND = 'db+sqlite:///results.sqlite'
 #CELERY_CACHE_BACKEND = 'django-cache'
