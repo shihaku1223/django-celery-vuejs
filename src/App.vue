@@ -1,6 +1,7 @@
 <template>
   <div>
     <navigation-header-bar/>
+
     <div class='container'>
       <div class='content'>
 
@@ -135,6 +136,9 @@ export default {
 
   methods: {
     async onClick(e) {
+      let loader = this.$loading.show()
+
+      this.results = []
       console.log('calculate button click')
       console.log(this.mantisId)
       console.log(this.projectName)
@@ -153,6 +157,7 @@ export default {
       const p = await this.axios.post('/calcsim', postData)
       this.results = p.data.result
       console.log(this.results.length)
+      loader.hide()
     }
   },
 
