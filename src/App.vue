@@ -135,6 +135,18 @@ export default {
   }),
 
   methods: {
+    waitForTaskSuccess(task_id) {
+      return new Promise( (resolve, reject) => {
+        const intervalId = setInterval( async () => {
+          const p = await this.axios.get(`/calcsim/${task_id}`)
+          if(p.data.status == "success") {
+            clearInterval(intervalId)
+            resolve(p.data)
+          }
+        }, 3000)
+      })
+    },
+
     async onClick(e) {
       let loader = this.$loading.show()
 
@@ -154,9 +166,11 @@ export default {
         method: this.method,
         column: this.selected,
       }
+
       const p = await this.axios.post('/calcsim', postData)
-      this.results = p.data.result
-      console.log(this.results.length)
+      const task_id = p.data.task_id
+      const task = await this.waitForTaskSuccess(task_id)
+      this.results = task.result
       loader.hide()
     }
   },

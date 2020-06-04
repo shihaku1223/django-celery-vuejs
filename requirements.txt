@@ -11,3 +11,5 @@ django-celery-results
 sqlalchemy
 uwsgi
 django-rest-framework
+pymongo
+django-jsonfield

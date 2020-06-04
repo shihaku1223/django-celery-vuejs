@@ -1,4 +1,5 @@
 from django.db import models
+import jsonfield
 from enum import Enum
 
 class TaskStatus(Enum):

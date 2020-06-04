@@ -3,11 +3,16 @@ from celery import shared_task
 from calcsim.models import CalcTask, TaskStatus, TaskStatusToString
 from similarityapp.utils import execute
 from similarityapp.settings import MANTIS_HOST, MANTIS_USER, MANTIS_PASS
+from similarityapp.settings import MONGO_HOST, MONGO_USER, MONGO_PASS
 from mantis_soap.Connector import Connector
 
 # similarity calculation function
 from similarityapp.app import calculateByTicketIdwithProject
 from similarityapp.app import calculateByTextwithProject
+from similarityapp.app import get_issues_by_project
+from similarityapp.app import insert_task_result
+
+from django.conf import settings
 
 @shared_task(bind=True)
 def executeCalculation(self, mantisId,
@@ -20,8 +25,13 @@ def executeCalculation(self, mantisId,
     mantisConnector.connect()
 
     projectId = mantisConnector.getProjectId(projectName)
-    issues = mantisConnector.getProjectIssues(projectId)
+    #issues = mantisConnector.getProjectIssues(projectId)
     #issues = mantisConnector.getIssuesByFilter(projectId, 11092, 0, 0)
+
+    issues = get_issues_by_project(projectName,
+        MONGO_HOST, MONGO_USER, MONGO_PASS)
+
+    print(len(issues))
 
     taskUUIDStr = executeCalculation.request.id
 
@@ -40,6 +50,20 @@ def executeCalculation(self, mantisId,
             result = calculateByTextwithProject(
                 textPhrase, issues, column)
 
+        resultList = []
+        mantisURL='http://10.156.2.84/mantis/ipf3/app/view.php?id={}'
+        i = 0
+        l = len(result)
+        while i < numbers and i < l:
+            obj = {}
+            obj['href'] = mantisURL.format(result[i]['id'])
+            obj['score'] = '{}'.format(result[i]['value'])
+            resultList.append(obj)
+            i = i + 1
+
+        insert_task_result(taskUUIDStr, resultList,
+            MONGO_HOST, MONGO_USER, MONGO_PASS)
+
         task.status = TaskStatusToString(
             TaskStatus.SUCCESS)
     except Exception as e:
@@ -48,25 +72,3 @@ def executeCalculation(self, mantisId,
             TaskStatus.FAILED)
 
     task.save()
-
-    resultList = []
-    mantisURL='http://10.156.2.84/mantis/ipf3/app/view.php?id={}'
-    i = 0
-    t = iter(result)
-    print(len(result))
-    try:
-        while i < numbers:
-            key = next(t)
-            if key == -1:
-                i = i + 1
-                continue
-
-            obj = {}
-            obj['href'] = mantisURL.format(key)
-            obj['score'] = '{}'.format(result[key])
-            resultList.append(obj)
-            i = i + 1
-    except StopIteration:
-        pass
-
-    return resultList

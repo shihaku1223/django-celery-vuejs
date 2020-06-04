@@ -11,12 +11,52 @@ from mantis_soap.Connector import Connector
 import csv
 import sys
 
+from pymongo import MongoClient
+
+def insert_task_result(task_id, result_list,
+        host, username, password):
+    client = MongoClient(host, username=username, password=password)
+
+    db = client['similarity']
+    collect = db['tasks']
+    obj = {}
+    obj['task_id'] = task_id
+    obj['result'] = result_list
+
+    try:
+        ids = collect.insert_one(obj)
+    except Exception as e:
+        raise(e)
+
+    client.close()
+
+def get_issues_by_project(project, host, username, password):
+    client = MongoClient(host, username=username, password=password)
+
+    pipeline = [
+        { "$match": { "$and":[ { 'project.name': project  } ] } },
+        { "$project": {
+            "id": 1,
+            "summary": 1,
+            "description": 1,
+            "project": 1
+        } }
+    ]
+    db = client['mantis']
+    result = db.issues.aggregate(pipeline)
+    client.close()
+    return list(result)
+
+
 def cos_sim(v1, v2):
     return numpy.dot(v1, v2) / (numpy.linalg.norm(v1) * numpy.linalg.norm(v2))
 
 
+def sort_result(x, y):
+    r = {}
+
 def calculate(texts: list, idList: list, ticketsDict: dict, column: str):
-    resultDict = {}
+    resultList = []
 
     embed = hub.load(
         "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
@@ -31,13 +71,16 @@ def calculate(texts: list, idList: list, ticketsDict: dict, column: str):
 
     # calculate the cos
     length = len(texts)
-    i = 0
+    i = 1
     while i < length:
-        resultDict[idList[i]] = cos_sim(result[0], result[i])
+        obj = {}
+        obj['id'] = idList[i]
+        obj['value'] = cos_sim(result[0], result[i])
+        resultList.append(obj)
         i = i + 1
 
-    sorted_result = collections.OrderedDict(sorted(
-        resultDict.items(), key=lambda x: x[1], reverse=True))
+    sorted_result = sorted(resultList,
+        key=lambda x: x['value'], reverse=True)
 
     return sorted_result
 
@@ -64,29 +107,75 @@ def calculateByTicketIdwithProject(_id: int, issue, issues: list, column: str):
 
     texts = [issue[column]]
     idList = [_id]
+    result = []
 
     ticketsDict = {}
-    for issue in issues:
-        ticketsDict[issue['id']] = issue
+    l = len(issues)
+    i = 0
+    while i < l:
+        _issue = issues[i]
+        ticketsDict[_issue['id']] = _issue
 
-    return calculate(texts, idList,
-        ticketsDict, column)
+        if i % 500 == 0:
+            r = calculate(texts, idList, ticketsDict, column)
+
+            result.extend(r)
+
+            texts = [issue[column]]
+            idList = [_id]
+            ticketsDict = {}
+
+        i = i + 1
+    r = calculate(texts, idList, ticketsDict, column)
+    result.extend(r)
+
+    sorted_result = sorted(result,
+        key=lambda x: x['value'], reverse=True)
+
+    return sorted_result
 
 def calculateByTextwithProject(text: str, issues: list, column: str):
 
     texts = [text]
     idList = [-1]
 
-    ticketsDict = {}
-    for issue in issues:
-        ticketsDict[issue['id']] = issue
+    result = []
 
-    return calculate(texts, idList,
-        ticketsDict, column)
+    ticketsDict = {}
+    l = len(issues)
+    i = 0
+    while i < l:
+        _issue = issues[i]
+        ticketsDict[_issue['id']] = _issue
+
+        if i % 500 == 0:
+            r = calculate(texts, idList, ticketsDict, column)
+
+            result.extend(r)
+            texts = [text]
+            idList = [-1]
+
+            ticketsDict = {}
+
+        i = i + 1
+    r = calculate(texts, idList, ticketsDict, column)
+    result.extend(r)
+
+    sorted_result = sorted(result,
+        key=lambda x: x['value'], reverse=True)
+
+    return sorted_result
 
 def showResult(result, numbers: int):
 
     mantisURL='http://10.156.2.84/mantis/ipf3/app/view.php?id={}'
+    i = 0
+    l = len(result)
+    while i < numbers and i < l:
+        print(mantisURL.format(result[i]['id']) +
+              ' score {}'.format(result[i]['value']))
+        i = i + 1
+    """
     i = 0
     t = iter(result)
     try:
@@ -102,6 +191,7 @@ def showResult(result, numbers: int):
             i = i + 1
     except StopIteration:
         return
+    """
 
 def readCSV(csv_list):
     ticketsDict = {}
@@ -152,8 +242,10 @@ if __name__ == '__main__':
         mantisConnector.connect()
 
         projectId = mantisConnector.getProjectId(args.project)
-        issues = mantisConnector.getProjectIssues(projectId)
+        #issues = mantisConnector.getProjectIssues(projectId)
         #issues = mantisConnector.getIssuesByFilter(projectId, 11092, 0, 0)
+        host="mongodb://mongo:27017/"
+        issues = get_issues_by_project(args.project, host, 'root', 'root')
 
         if args.id is not None:
             issue = mantisConnector.getIssue(args.id)
