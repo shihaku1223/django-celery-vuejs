@@ -116,7 +116,7 @@ def calculateByTicketIdwithProject(_id: int, issue, issues: list, column: str):
         _issue = issues[i]
         ticketsDict[_issue['id']] = _issue
 
-        if i % 500 == 0:
+        if i % 100 == 0:
             r = calculate(texts, idList, ticketsDict, column)
 
             result.extend(r)
@@ -148,7 +148,7 @@ def calculateByTextwithProject(text: str, issues: list, column: str):
         _issue = issues[i]
         ticketsDict[_issue['id']] = _issue
 
-        if i % 500 == 0:
+        if i % 100 == 0:
             r = calculate(texts, idList, ticketsDict, column)
 
             result.extend(r)
@@ -244,7 +244,7 @@ if __name__ == '__main__':
         projectId = mantisConnector.getProjectId(args.project)
         #issues = mantisConnector.getProjectIssues(projectId)
         #issues = mantisConnector.getIssuesByFilter(projectId, 11092, 0, 0)
-        host="mongodb://mongo:27017/"
+        host="mongodb://localhost:27017/"
         issues = get_issues_by_project(args.project, host, 'root', 'root')
 
         if args.id is not None:

@@ -119,7 +119,7 @@ export default {
 
   data: () => ({
     taskData: 'Hello',
-    projectName: 'CV2K_App',
+    projectName: 'CV2KApp窓口,OTV_PF',
     mantisUrl: 'http://10.156.2.84/mantis/ipf3/app',
     mantisId: '46914',
     textPhrase: 'ユーザー設定画面を操作中に、モダコンの接続が切 れて',
@@ -147,30 +147,71 @@ export default {
       })
     },
 
-    async onClick(e) {
-      let loader = this.$loading.show()
-
-      this.results = []
-      console.log('calculate button click')
-      console.log(this.mantisId)
-      console.log(this.projectName)
-      console.log(this.textPhrase)
-      console.log(this.mantisUrl)
+    sendTaskRequest(projectName) {
 
       let postData = {
         mantisId: parseInt(this.mantisId),
-        projectName: this.projectName,
+        projectName: projectName,
         textPhrase: this.textPhrase,
         numberToShow: parseInt(this.numberToShow),
         mantisUrl: this.mantisUrl,
         method: this.method,
         column: this.selected,
       }
+      return this.axios.post('/calcsim', postData)
+      //return Promise.resolve('test')
+    },
 
-      const p = await this.axios.post('/calcsim', postData)
-      const task_id = p.data.task_id
-      const task = await this.waitForTaskSuccess(task_id)
-      this.results = task.result
+    async onClick(e) {
+      let loader = this.$loading.show()
+
+      this.results = []
+      console.log('calculate button click')
+      console.log(this.mantisId)
+      console.log(this.projectName.split(','))
+      console.log(this.textPhrase)
+      console.log(this.mantisUrl)
+
+      let projectNameList = this.projectName.split(',')
+      let requests = projectNameList.map(async (name) => {
+          let r = await this.sendTaskRequest(name)
+          return this.waitForTaskSuccess(r.data.task_id)
+      })
+
+      let tasks = await Promise.all(requests)
+      console.log(tasks)
+
+      let result = tasks[0].result
+
+      let numberToShow = parseInt(this.numberToShow)
+
+      let i, j, k
+      let last = 0
+      let size = tasks.length
+      for(i = 1; i < size; i++) {
+        let arr = tasks[i].result
+        let l = arr.length
+        j = 0
+
+        while(j < l) {
+          k = last
+          while(k < result.length && k < numberToShow) {
+
+            if(parseInt(arr[j].score) > parseInt(result[k].score)) {
+              result.splice(k, 0, arr[j])
+              last = k + 1
+              break
+            }
+            k++
+          }
+          if(k >= numberToShow)
+            break
+          if(k == result.length)
+            result.splice(k, 0, arr[j])
+          j++
+        }
+      }
+      this.results = result
       loader.hide()
     }
   },

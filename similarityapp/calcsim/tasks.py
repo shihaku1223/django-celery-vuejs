@@ -25,9 +25,6 @@ def executeCalculation(self, mantisId,
     mantisConnector.connect()
 
     projectId = mantisConnector.getProjectId(projectName)
-    #issues = mantisConnector.getProjectIssues(projectId)
-    #issues = mantisConnector.getIssuesByFilter(projectId, 11092, 0, 0)
-
     issues = get_issues_by_project(projectName,
         MONGO_HOST, MONGO_USER, MONGO_PASS)
 
