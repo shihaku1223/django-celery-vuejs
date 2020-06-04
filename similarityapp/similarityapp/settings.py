@@ -35,7 +35,7 @@ MONGO_HOST="mongodb://mongo:27017/"
 MONGO_USER="root"
 MONGO_PASS="root"
 
-CELERY_BROKER_URL = 'amqp://guest:guest@localhost'
+CELERY_BROKER_URL = 'amqp://guest:guest@rabbit'
 CELERY_RESULT_BACKEND = 'django-db'
 #CELERY_RESULT_BACKEND = 'db+sqlite:///results.sqlite'
 #CELERY_CACHE_BACKEND = 'django-cache'
