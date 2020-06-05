@@ -179,7 +179,6 @@ export default {
       })
 
       let tasks = await Promise.all(requests)
-      console.log(tasks)
 
       let result = tasks[0].result
 

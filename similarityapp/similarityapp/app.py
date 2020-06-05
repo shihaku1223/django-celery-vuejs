@@ -56,7 +56,7 @@ def sort_result(x, y):
     r = {}
 
 def calculate(texts: list, idList: list, ticketsDict: dict, column: str):
-    resultList = []
+    resultDict = {}
 
     embed = hub.load(
         "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
@@ -76,12 +76,16 @@ def calculate(texts: list, idList: list, ticketsDict: dict, column: str):
         obj = {}
         obj['id'] = idList[i]
         obj['value'] = cos_sim(result[0], result[i])
-        resultList.append(obj)
+        resultDict[idList[i]] = obj
         i = i + 1
 
-    sorted_result = sorted(resultList,
-        key=lambda x: x['value'], reverse=True)
+    sorted_result = collections.OrderedDict(sorted(
+        resultDict.items(), key=lambda x: x[1]['value'], reverse=True))
 
+    """
+    sorted_result = sorted(resultDict,
+        key=lambda x: x[1]['value'], reverse=True)
+    """
     return sorted_result
 
 
@@ -107,7 +111,7 @@ def calculateByTicketIdwithProject(_id: int, issue, issues: list, column: str):
 
     texts = [issue[column]]
     idList = [_id]
-    result = []
+    result = {}
 
     ticketsDict = {}
     l = len(issues)
@@ -119,18 +123,22 @@ def calculateByTicketIdwithProject(_id: int, issue, issues: list, column: str):
         if i % 100 == 0:
             r = calculate(texts, idList, ticketsDict, column)
 
-            result.extend(r)
-
+            #result.extend(r)
+            result = {**result, **r}
             texts = [issue[column]]
             idList = [_id]
             ticketsDict = {}
 
         i = i + 1
     r = calculate(texts, idList, ticketsDict, column)
-    result.extend(r)
+    result = {**result, **r}
 
+    """
     sorted_result = sorted(result,
         key=lambda x: x['value'], reverse=True)
+    """
+    sorted_result = collections.OrderedDict(sorted(
+        result.items(), key=lambda x: x[1]['value'], reverse=True))
 
     return sorted_result
 
@@ -139,7 +147,8 @@ def calculateByTextwithProject(text: str, issues: list, column: str):
     texts = [text]
     idList = [-1]
 
-    result = []
+    #result = []
+    result = {}
 
     ticketsDict = {}
     l = len(issues)
@@ -151,7 +160,7 @@ def calculateByTextwithProject(text: str, issues: list, column: str):
         if i % 100 == 0:
             r = calculate(texts, idList, ticketsDict, column)
 
-            result.extend(r)
+            result = {**result, **r}
             texts = [text]
             idList = [-1]
 
@@ -159,16 +168,23 @@ def calculateByTextwithProject(text: str, issues: list, column: str):
 
         i = i + 1
     r = calculate(texts, idList, ticketsDict, column)
-    result.extend(r)
+    #result.extend(r)
+    result = {**result, **r}
 
+    """
     sorted_result = sorted(result,
         key=lambda x: x['value'], reverse=True)
+    """
+    sorted_result = collections.OrderedDict(sorted(
+        result.items(), key=lambda x: x[1]['value'], reverse=True))
 
     return sorted_result
 
 def showResult(result, numbers: int):
 
     mantisURL='http://10.156.2.84/mantis/ipf3/app/view.php?id={}'
+
+    """
     i = 0
     l = len(result)
     while i < numbers and i < l:
@@ -187,11 +203,10 @@ def showResult(result, numbers: int):
                 continue
 
             print(mantisURL.format(key) +
-                  ' score {}'.format(result[key]))
+                  ' score {}'.format(result[key]['value']))
             i = i + 1
     except StopIteration:
         return
-    """
 
 def readCSV(csv_list):
     ticketsDict = {}

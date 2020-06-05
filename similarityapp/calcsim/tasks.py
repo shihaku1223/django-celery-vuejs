@@ -50,13 +50,20 @@ def executeCalculation(self, mantisId,
         resultList = []
         mantisURL='http://10.156.2.84/mantis/ipf3/app/view.php?id={}'
         i = 0
-        l = len(result)
-        while i < numbers and i < l:
-            obj = {}
-            obj['href'] = mantisURL.format(result[i]['id'])
-            obj['score'] = '{}'.format(result[i]['value'])
-            resultList.append(obj)
-            i = i + 1
+        t = iter(result)
+        try:
+            while i < numbers:
+                key = next(t)
+                if key == -1:
+                    print('text phrase', args.text)
+                    continue
+                obj = {}
+                obj['href'] = mantisURL.format(result[key]['id'])
+                obj['score'] = '{}'.format(result[key]['value'])
+                resultList.append(obj)
+                i = i + 1
+        except StopIteration:
+            pass
 
         insert_task_result(taskUUIDStr, resultList,
             MONGO_HOST, MONGO_USER, MONGO_PASS)
