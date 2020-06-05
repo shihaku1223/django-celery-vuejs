@@ -185,29 +185,31 @@ export default {
 
       let numberToShow = parseInt(this.numberToShow)
 
-      let i, j, k
-      let last = 0
+      let i
       let size = tasks.length
       for(i = 1; i < size; i++) {
         let arr = tasks[i].result
         let l = arr.length
-        j = 0
+        let j = 0
+        let last = 0
+        let k = 0
 
         while(j < l) {
           k = last
           while(k < result.length && k < numberToShow) {
 
-            if(parseInt(arr[j].score) > parseInt(result[k].score)) {
+            if(parseFloat(arr[j].score) > parseFloat(result[k].score)) {
               result.splice(k, 0, arr[j])
               last = k + 1
               break
             }
             k++
           }
-          if(k >= numberToShow)
+          if(k >= result.length) {
+            let a = arr.slice(j, arr.length)
+            result = [...result, ...a]
             break
-          if(k == result.length)
-            result.splice(k, 0, arr[j])
+          }
           j++
         }
       }
