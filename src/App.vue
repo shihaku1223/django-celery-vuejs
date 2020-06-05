@@ -212,6 +212,7 @@ export default {
           j++
         }
       }
+      result.length = numberToShow
       this.results = result
       loader.hide()
     }
