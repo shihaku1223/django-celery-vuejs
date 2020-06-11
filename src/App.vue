@@ -212,8 +212,7 @@ export default {
           j++
         }
       }
-      result.length = numberToShow
-      this.results = result
+      this.results = result.slice(0, numberToShow)
       loader.hide()
     }
   },
