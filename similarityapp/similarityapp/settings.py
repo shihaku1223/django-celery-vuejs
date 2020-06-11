@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -34,6 +35,7 @@ MANTIS_PASS = 'iY59RsDn'
 MONGO_HOST="mongodb://mongo:27017/"
 MONGO_USER="root"
 MONGO_PASS="root"
+CALCAPP_PATH = str(Path(BASE_DIR, 'similarityapp/app.py').resolve())
 
 CELERY_BROKER_URL = 'amqp://guest:guest@rabbit'
 CELERY_RESULT_BACKEND = 'django-db'

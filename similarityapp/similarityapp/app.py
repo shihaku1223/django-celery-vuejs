@@ -249,6 +249,17 @@ if __name__ == '__main__':
     parser.add_argument('--nums', type=int, default=130,
         help='the number of result to show')
 
+    parser.add_argument('--mongo-host', type=str, default=None,
+        help='MongoDB Host')
+    parser.add_argument('--mongo-user', type=str, default=None,
+        help='MongoDB user')
+    parser.add_argument('--mongo-pass', type=str, default=None,
+        help='MongoDB password')
+
+
+    parser.add_argument("--task-id", default = None, type=str,
+        help = "task id")
+
     args = parser.parse_args()
 
     if args.project is not None:
@@ -259,7 +270,8 @@ if __name__ == '__main__':
         projectId = mantisConnector.getProjectId(args.project)
         #issues = mantisConnector.getProjectIssues(projectId)
         #issues = mantisConnector.getIssuesByFilter(projectId, 11092, 0, 0)
-        host="mongodb://localhost:27017/"
+        host=args.mongo_host
+        #host="mongodb://localhost:27017/"
         issues = get_issues_by_project(args.project, host, 'root', 'root')
 
         if args.id is not None:
@@ -270,6 +282,28 @@ if __name__ == '__main__':
             result = calculateByTextwithProject(
                 args.text, issues, args.column)
 
+        if args.task_id is not None:
+            resultList = []
+            mantisURL='http://10.156.2.84/mantis/ipf3/app/view.php?id={}'
+            i = 0
+            t = iter(result)
+            try:
+                while i < args.nums:
+                    key = next(t)
+                    if key == -1:
+                        print('text phrase', args.text)
+                        continue
+                    obj = {}
+                    obj['href'] = mantisURL.format(result[key]['id'])
+                    obj['score'] = '{}'.format(result[key]['value'])
+                    resultList.append(obj)
+                    i = i + 1
+            except StopIteration:
+                pass
+
+            insert_task_result(args.task_id, resultList,
+                args.mongo_host, args.mongo_user, args.mongo_pass)
+            sys.exit(0)
         showResult(result, args.nums)
         sys.exit(0)
 

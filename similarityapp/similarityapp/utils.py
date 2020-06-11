@@ -1,9 +1,7 @@
 import subprocess
 
 
-def execute(path, args = [], env = None, cwd = None):
-
-    command = [path]
+def execute(command, args = [], env = None, cwd = None):
 
     for arg in args:
         print('{}'.format(arg))
