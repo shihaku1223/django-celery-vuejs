@@ -10,8 +10,29 @@ import numpy
 from mantis_soap.Connector import Connector
 import csv
 import sys
+import io
 
 from pymongo import MongoClient
+
+def insert_vectors(ticketId, summary, description, steps,
+        host, username, password):
+    client = MongoClient(host, username=username, password=password)
+
+    db = client['similarity']
+    collect = db['vectors']
+    obj = {}
+    obj['ticketId'] = ticketId
+    obj['description'] = description
+    obj['summary'] = summary
+    if steps is not None:
+        obj['steps_to_reproduce'] = steps
+
+    try:
+        ids = collect.insert_one(obj)
+    except Exception as e:
+        raise(e)
+
+    client.close()
 
 def insert_task_result(task_id, result_list,
         host, username, password):
@@ -55,6 +76,82 @@ def cos_sim(v1, v2):
 def sort_result(x, y):
     r = {}
 
+def retrieveVector(ticketId, host, username, password):
+    client = MongoClient(host, username=username, password=password)
+
+    pipeline = [
+        { "$match": { 'ticketId': ticketId }},
+        { "$project": {
+            "ticketId": 1,
+            "description": 1,
+            "summary": 1,
+            'steps_to_reproduce': 1
+          }
+        }
+    ]
+    db = client['similarity']
+    result = db.vectors.aggregate(pipeline)
+
+    client.close()
+    return list(result)[0]
+
+def serializeNumpy(vector):
+    out = io.BytesIO()
+    numpy.save(out, vector)
+    out.seek(0)
+    serialized = out.read()
+    return serialized
+
+def unserializeNumpy(b):
+    inStream = io.BytesIO(b)
+    inStream.seek(0)
+    data = numpy.load(inStream)
+
+    return data
+
+
+def calculateVectors(ticketsDict):
+    embed = hub.load(
+        "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
+
+    columns = [
+        'summary',
+        'description',
+        'steps_to_reproduce'
+    ]
+
+    for __id, ticket in ticketsDict.items():
+        print('calculate {}'.format(__id))
+        texts = []
+        for column in columns:
+            try:
+                texts.append(ticket[column])
+            except:
+                pass
+
+        vectors = embed(texts)
+        summary = serializeNumpy(vectors[0].numpy())
+        description = serializeNumpy(vectors[1].numpy())
+        steps = None
+        try:
+            steps = serializeNumpy(vectors[2].numpy())
+        except:
+            pass
+
+        insert_vectors(__id, summary, description, steps,
+            args.mongo_host, args.mongo_user, args.mongo_pass)
+        """
+        vectors = retrieveVector(__id,
+            args.mongo_host, args.mongo_user, args.mongo_pass)
+
+        print('summary', unserializeNumpy(vectors['summary']))
+        print('description', unserializeNumpy(vectors['description']))
+        try:
+            print('steps', unserializeNumpy(vectors['steps_to_reproduce']))
+        except:
+            print('no steps to reproduce')
+
+        """
 def calculate(texts: list, idList: list, ticketsDict: dict, column: str):
     resultDict = {}
 
@@ -106,6 +203,24 @@ def calculateByTicketId(_id: int, ticketsDict: dict, column: str):
 
     return calculate(texts, idList,
         ticketsDict, column)
+
+def calculateVectorswithProject(issues: list):
+    print('calculate')
+    ticketsDict = {}
+    l = len(issues)
+    i = 0
+    while i < l:
+        _issue = issues[i]
+        ticketsDict[_issue['id']] = _issue
+
+        if (i + 1) % 100 == 0:
+            print(i)
+            r = calculateVectors(ticketsDict)
+
+            ticketsDict = {}
+        i = i + 1
+
+    r = calculateVectors(ticketsDict)
 
 def calculateByTicketIdwithProject(_id: int, issue, issues: list, column: str):
 
@@ -256,6 +371,8 @@ if __name__ == '__main__':
     parser.add_argument('--mongo-pass', type=str, default=None,
         help='MongoDB password')
 
+    parser.add_argument("--vectors", default = None, action='store_true',
+        help = "calculate the vectors")
 
     parser.add_argument("--task-id", default = None, type=str,
         help = "task id")
@@ -268,11 +385,12 @@ if __name__ == '__main__':
         mantisConnector.connect()
 
         projectId = mantisConnector.getProjectId(args.project)
-        #issues = mantisConnector.getProjectIssues(projectId)
-        #issues = mantisConnector.getIssuesByFilter(projectId, 11092, 0, 0)
         host=args.mongo_host
-        #host="mongodb://localhost:27017/"
         issues = get_issues_by_project(args.project, host, 'root', 'root')
+
+        if args.vectors is True:
+            calculateVectorswithProject(issues)
+            sys.exit(0)
 
         if args.id is not None:
             issue = mantisConnector.getIssue(args.id)
