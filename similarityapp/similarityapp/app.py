@@ -293,7 +293,7 @@ def calculateByTicketIdwithProject(_id: int, issue, issues: list, column: str):
         _issue = issues[i]
         ticketsDict[_issue['id']] = _issue
 
-        if (i + 1) % 100 == 0:
+        if (i + 1) % 1000 == 0:
             r = calculateFetch(texts, idList, ticketsDict, column)
 
             #result.extend(r)
@@ -330,7 +330,7 @@ def calculateByTextwithProject(text: str, issues: list, column: str):
         _issue = issues[i]
         ticketsDict[_issue['id']] = _issue
 
-        if (i + 1) % 100 == 0:
+        if (i + 1) % 1000 == 0:
             r = calculateFetch(texts, idList, ticketsDict, column)
 
             result = {**result, **r}
