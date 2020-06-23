@@ -76,6 +76,23 @@ def cos_sim(v1, v2):
 def sort_result(x, y):
     r = {}
 
+def __retrieveVector(client, ticketId):
+    pipeline = [
+        { "$match": { 'ticketId': ticketId }},
+        { "$project": {
+            "ticketId": 1,
+            "description": 1,
+            "summary": 1,
+            'steps_to_reproduce': 1
+          }
+        }
+    ]
+    db = client['similarity']
+    result = db.vectors.aggregate(pipeline)
+
+    return list(result)[0]
+
+
 def retrieveVector(ticketId, host, username, password):
     client = MongoClient(host, username=username, password=password)
 
@@ -152,6 +169,47 @@ def calculateVectors(ticketsDict):
             print('no steps to reproduce')
 
         """
+
+# calculating function using calcuated vector data
+def calculateFetch(texts: list, idList: list, ticketsDict: dict, column: str):
+    resultDict = {}
+    embed = hub.load(
+        "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
+
+    calculated = {}
+    client = MongoClient(args.mongo_host,
+                         username=args.mongo_user,
+                         password=args.mongo_pass)
+
+    for __id, ticket in ticketsDict.items():
+        if __id != idList[0]:
+            vectors = __retrieveVector(client, __id)
+            calculated[__id] = unserializeNumpy(vectors[column])
+            idList.append(__id)
+    client.close()
+
+    # calculate the vector of target to compare
+    result = embed(texts)
+
+    # calculate the similarity
+    length = len(idList)
+    # start from the second record
+    # the first record is the target compare to
+    i = 1
+    while i < length:
+        obj = {}
+        _id = idList[i]
+
+        obj['id'] = _id
+        obj['value'] = cos_sim(result[0], calculated[_id])
+        resultDict[_id] = obj
+        i = i + 1
+
+    sorted_result = collections.OrderedDict(sorted(
+        resultDict.items(), key=lambda x: x[1]['value'], reverse=True))
+
+    return sorted_result
+
 def calculate(texts: list, idList: list, ticketsDict: dict, column: str):
     resultDict = {}
 
@@ -235,8 +293,8 @@ def calculateByTicketIdwithProject(_id: int, issue, issues: list, column: str):
         _issue = issues[i]
         ticketsDict[_issue['id']] = _issue
 
-        if i % 100 == 0:
-            r = calculate(texts, idList, ticketsDict, column)
+        if (i + 1) % 100 == 0:
+            r = calculateFetch(texts, idList, ticketsDict, column)
 
             #result.extend(r)
             result = {**result, **r}
@@ -245,7 +303,7 @@ def calculateByTicketIdwithProject(_id: int, issue, issues: list, column: str):
             ticketsDict = {}
 
         i = i + 1
-    r = calculate(texts, idList, ticketsDict, column)
+    r = calculateFetch(texts, idList, ticketsDict, column)
     result = {**result, **r}
 
     """
@@ -272,8 +330,8 @@ def calculateByTextwithProject(text: str, issues: list, column: str):
         _issue = issues[i]
         ticketsDict[_issue['id']] = _issue
 
-        if i % 100 == 0:
-            r = calculate(texts, idList, ticketsDict, column)
+        if (i + 1) % 100 == 0:
+            r = calculateFetch(texts, idList, ticketsDict, column)
 
             result = {**result, **r}
             texts = [text]
@@ -282,7 +340,7 @@ def calculateByTextwithProject(text: str, issues: list, column: str):
             ticketsDict = {}
 
         i = i + 1
-    r = calculate(texts, idList, ticketsDict, column)
+    r = calculateFetch(texts, idList, ticketsDict, column)
     #result.extend(r)
     result = {**result, **r}
 
