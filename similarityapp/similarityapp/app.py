@@ -11,6 +11,7 @@ from mantis_soap.Connector import Connector
 import csv
 import sys
 import io
+import zeep
 
 from pymongo import MongoClient
 
@@ -142,7 +143,8 @@ def calculateVectors(ticketsDict):
         texts = []
         for column in columns:
             try:
-                texts.append(ticket[column])
+                if ticket[column] is not None:
+                    texts.append(ticket[column])
             except:
                 pass
 
@@ -443,12 +445,26 @@ if __name__ == '__main__':
         mantisConnector.connect()
 
         projectId = mantisConnector.getProjectId(args.project)
-        host=args.mongo_host
-        issues = get_issues_by_project(args.project, host, 'root', 'root')
 
         if args.vectors is True:
-            calculateVectorswithProject(issues)
+            m = float('inf')
+            i = 1
+            while i < m:
+                issues = mantisConnector.getIssuesByFilter(projectId, 11092, i, 50)
+
+                if len(issues) == 0:
+                    break
+                print("Issues count: {} {}".format(str(len(issues)), i),
+                      flush=True)
+
+                objs = zeep.helpers.serialize_object(issues)
+                calculateVectorswithProject(objs)
+                i = i + 1
+
             sys.exit(0)
+
+        host=args.mongo_host
+        issues = get_issues_by_project(args.project, host, 'root', 'root')
 
         if args.id is not None:
             issue = mantisConnector.getIssue(args.id)
