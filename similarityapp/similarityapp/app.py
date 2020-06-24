@@ -69,6 +69,23 @@ def get_issues_by_project(project, host, username, password):
     client.close()
     return list(result)
 
+def get_issues_by_projectId(projectId, host, username, password):
+    client = MongoClient(host, username=username, password=password)
+
+    pipeline = [
+        { "$match": { "$and":[ { 'project.id': projectId  } ] } },
+        { "$project": {
+            "id": 1,
+            "summary": 1,
+            "description": 1,
+            "project": 1
+        } }
+    ]
+    db = client['mantis']
+    result = db.issues.aggregate(pipeline)
+    client.close()
+    return list(result)
+
 
 def cos_sim(v1, v2):
     return numpy.dot(v1, v2) / (numpy.linalg.norm(v1) * numpy.linalg.norm(v2))
@@ -415,6 +432,9 @@ if __name__ == '__main__':
     parser.add_argument('--project', type=str,
         help='specify the project name to search from')
 
+    parser.add_argument('--projectId', type=int,
+        help='specify the project name to search from')
+
     parser.add_argument('--csvs', type=str, action='append',
         help='Mantis csv')
 
@@ -439,30 +459,21 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    if args.projectId is not None:
+
+        issues = get_issues_by_projectId(args.projectId,
+            args.mongo_host, 'root', 'root')
+
+        if args.vectors is True:
+            calculateVectorswithProject(issues)
+            sys.exit(0)
+
     if args.project is not None:
         url = "http://osoft-de-c.olympus.co.jp/mantis/ipf3/app/api/soap/mantisconnect.php?wsdl"
         mantisConnector = Connector(url, args.user, args.password)
         mantisConnector.connect()
 
         projectId = mantisConnector.getProjectId(args.project)
-
-        if args.vectors is True:
-            m = float('inf')
-            i = 1
-            while i < m:
-                issues = mantisConnector.getIssuesByFilter(projectId, 11092, i, 50)
-
-                if len(issues) == 0:
-                    break
-                print("Issues count: {} {}".format(str(len(issues)), i),
-                      flush=True)
-
-                objs = zeep.helpers.serialize_object(issues)
-                calculateVectorswithProject(objs)
-                i = i + 1
-
-            sys.exit(0)
-
         host=args.mongo_host
         issues = get_issues_by_project(args.project, host, 'root', 'root')
 
