@@ -8,27 +8,13 @@
         <div class="w-100 flex">
           <text-label text='Mantis Url' />
           <text-input v-model="mantisUrl"
+            readonly=true
             placeHolder='mantis ticket id'
             style="width: 500px"
             />
         </div>
 
-        <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
-        <div class="w-100 flex">
-          <text-label text='Mantis Ticket Id' />
-          <text-input v-model="mantisId"
-            placeHolder='mantis ticket id'
-            style="width: 100px"
-            />
-
-          <text-label text='Text Phrase' />
-          <text-input v-model="textPhrase"
-            placeHolder='text phrase'
-            style="width: 500px"
-            />
-        </div>
-
-        <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
+        <div class="f4 normal mt0 mb4 pv2" />
        
         <div class="w-100 flex">
           <text-label text='Target Project' />
@@ -42,33 +28,69 @@
           
         </div>
 
+
+        <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
+        <div class="w-100 flex">
+          <div class="flex flex-column"
+            style="min-width: 150px"
+            >
+            <div>
+              <input type="radio"
+                v-model='method'
+                id="byIdCheckBox"
+                name="method"
+                value="id">
+              <label for="vehicle1"> By Id</label><br>
+
+              <input type="radio"
+                v-model='method'
+                id="byTextCheckBox"
+                name="method"
+                value="text">
+              <label for="vehicle2"> By text phrase</label><br>
+            </div>
+          </div>
+
+          <div class="flex flex-column"
+            style="min-width: 150px"
+            >
+            <text-label text='Mantis Ticket Id' />
+            <text-label text='Text Phrase' />
+          </div>
+          <div class="w-100 flex flex-column">
+            <text-input v-model="mantisId"
+              class="h2 ma2"
+              placeHolder='mantis ticket id'
+              style="width: 100px"
+              :readonly="this.method != 'id'"
+              />
+            <text-input v-model="textPhrase"
+              class="h2 ma2"
+              placeHolder='text phrase'
+              style="width: 500px"
+              :readonly="this.method != 'text'"
+              />
+          </div>
+        </div>
+
+
         <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
 
-        <div class="w-100 flex">
-          <text-label text='Ticket Number to Show' />
-          <text-input
-            v-model="numberToShow"
-            style="width: 50px;"/>
-
-          <div>
-            <input type="radio"
-              v-model='method'
-              id="byIdCheckBox"
-              name="method"
-              value="id">
-            <label for="vehicle1"> By Id</label><br>
-
-            <input type="radio"
-              v-model='method'
-              id="byTextCheckBox"
-              name="method"
-              value="text">
-            <label for="vehicle2"> By text phrase</label><br>
+        <div class="w-100 flex flex-row">
+          <div class="flex flex-row"
+              style="width: 300px;">
+            <text-label text='Ticket Number to Show' />
+            <text-input
+              v-model="numberToShow"
+              style="width: 50px;"/>
           </div>
-          <click-button
-            text='calculate'
+          
+          <click-button class="h2 ma2"
+            text='search'
             @click='onClick'/>
         </div>
+
+        <div class="dark-gray f4 normal mt0 mb1 pv1" />
 
         <!-- table -->
         <div class="dt bg-lightest-silver ba b--silver"
