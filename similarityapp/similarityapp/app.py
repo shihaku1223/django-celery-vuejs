@@ -462,7 +462,7 @@ if __name__ == '__main__':
     if args.projectId is not None:
 
         issues = get_issues_by_projectId(args.projectId,
-            args.mongo_host, 'root', 'root')
+            args.mongo_host, args.mongo_user, args.mongo_pass)
 
         if args.vectors is True:
             calculateVectorswithProject(issues)
@@ -474,8 +474,8 @@ if __name__ == '__main__':
         mantisConnector.connect()
 
         projectId = mantisConnector.getProjectId(args.project)
-        host=args.mongo_host
-        issues = get_issues_by_project(args.project, host, 'root', 'root')
+        issues = get_issues_by_project(args.project,
+            args.mongo_host, args.mongo_user, args.mongo_pass)
 
         if args.id is not None:
             issue = mantisConnector.getIssue(args.id)
