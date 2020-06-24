@@ -10,12 +10,22 @@ if __name__ == '__main__':
     connector.connect()
 
     print("Mantis SOAP MC Version:" + connector.getVersion())
+    app_path = './similarityapp/similarityapp/app.py'
 
-    projectId = connector.getProjectId('CV2K製品')
+    projectId = connector.getProjectId('VE2製品試験')
+    args = [
+        '--projectId', str(projectId),
+        '--mongo-host', 'mongodb://localhost:27017/',
+        '--mongo-user', 'root',
+        '--mongo-pass', 'root',
+        '--vectors'
+    ]
+    result = execute(['python3', app_path], args)
+    print(result['stdout'])
+
     subprojects = connector._mc.client.service.mc_project_get_all_subprojects(
             connector._mc.user_name, connector._mc.user_passwd, projectId)
     print(subprojects)
-    app_path = './similarityapp/similarityapp/app.py'
     for _id in subprojects:
         args = [
             '--projectId', _id,
