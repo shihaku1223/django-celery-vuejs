@@ -15,7 +15,9 @@ import zeep
 
 from pymongo import MongoClient
 
-def insert_vectors(ticketId, summary, description, steps,
+def insert_vectors(ticketId,
+        summary, description, steps,
+        s_d, s_s, s_d_s, d_s,
         host, username, password):
     client = MongoClient(host, username=username, password=password)
 
@@ -23,10 +25,13 @@ def insert_vectors(ticketId, summary, description, steps,
     collect = db['vectors']
     obj = {}
     obj['ticketId'] = ticketId
-    obj['description'] = description
     obj['summary'] = summary
-    if steps is not None:
-        obj['steps_to_reproduce'] = steps
+    obj['description'] = description
+    obj['steps_to_reproduce'] = steps
+    obj['s_d'] = s_d
+    obj['s_s'] = s_s
+    obj['s_d_s'] = s_d_s
+    obj['d_s'] = d_s
 
     try:
         ids = collect.insert_one(obj)
@@ -158,23 +163,36 @@ def calculateVectors(ticketsDict):
     for __id, ticket in ticketsDict.items():
         print('calculate {}'.format(__id))
         texts = []
-        for column in columns:
-            try:
-                if ticket[column] is not None:
-                    texts.append(ticket[column])
-            except:
-                pass
+        a = ''
+        b = ''
+        c = ''
+        if columns[0] in ticket:
+            a = ticket[columns[0]]
+        if columns[1] in ticket:
+            b = ticket[columns[1]]
+        if columns[2] in ticket:
+            c = ticket[columns[2]]
+
+        texts.append(a)
+        texts.append(b)
+        texts.append(c)
+        texts.append(a + b)
+        texts.append(a + c)
+        texts.append(a + b + c)
+        texts.append(b + c)
 
         vectors = embed(texts)
         summary = serializeNumpy(vectors[0].numpy())
         description = serializeNumpy(vectors[1].numpy())
-        steps = None
-        try:
-            steps = serializeNumpy(vectors[2].numpy())
-        except:
-            pass
+        steps = serializeNumpy(vectors[2].numpy())
+        s_d = serializeNumpy(vectors[3].numpy())
+        s_s = serializeNumpy(vectors[4].numpy())
+        s_d_s = serializeNumpy(vectors[5].numpy())
+        d_s = serializeNumpy(vectors[6].numpy())
 
-        insert_vectors(__id, summary, description, steps,
+        insert_vectors(__id,
+            summary, description, steps,
+            s_d, s_s, s_d_s, d_s,
             args.mongo_host, args.mongo_user, args.mongo_pass)
         """
         vectors = retrieveVector(__id,
