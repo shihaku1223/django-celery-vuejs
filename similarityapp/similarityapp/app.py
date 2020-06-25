@@ -66,6 +66,7 @@ def get_issues_by_project(project, host, username, password):
             "id": 1,
             "summary": 1,
             "description": 1,
+            "steps_to_reproduce": 1,
             "project": 1
         } }
     ]
@@ -83,7 +84,8 @@ def get_issues_by_projectId(projectId, host, username, password):
             "id": 1,
             "summary": 1,
             "description": 1,
-            "project": 1
+            "steps_to_reproduce": 1,
+            "project": 1,
         } }
     ]
     db = client['mantis']
