@@ -349,7 +349,7 @@ def calculateByTicketIdwithProject(_id: int, issue, issues: list, column: str):
 
             #result.extend(r)
             result = {**result, **r}
-            texts = [issue[column]]
+            texts = None
             idList = [_id]
             ticketsDict = {}
 
