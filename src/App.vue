@@ -16,16 +16,31 @@
 
         <div class="f4 normal mt0 mb4 pv2" />
        
-        <div class="w-100 flex">
-          <text-label text='Target Project' />
-          <text-input v-model="projectName"
-            placeHolder='target project name'/>
+        <div class="w-100 flex flex-row">
+          <div class="flex flex-column h2 ma2"
+            style="min-width: 300px"
+            >
 
-          <text-label text='Target Column' />
-          <select-menu
-            v-model="selected"
-            :options="columnOptions" />
-          
+            <text-label text='Target Project' />
+            <text-input v-model="projectName"
+              placeHolder='target project name'/>
+          </div>
+          <div class="flex flex-column h2 ma2"
+            style="min-width: 150px"
+            >
+            <text-label
+              style="min-width: 150px"
+              text='Target Column' />
+
+            <div class="w-100 flex h2 ma2">
+              <checkbox-label v-for="(option, index) in columnOptions"
+                class="ma2"
+                :key="index"
+                :text="option.text"
+                :value="option.value"
+              />
+            </div>
+          </div>
         </div>
 
 
@@ -136,6 +151,7 @@ import ClickButton from '@/components/ClickButton'
 import TextLabel from '@/components/TextLabel'
 import ScoreTableRow from '@/components/ScoreTableRow'
 import SelectMenu from '@/components/SelectMenu'
+import CheckboxLabel from '@/components/CheckboxLabel'
 
 export default {
 
@@ -151,6 +167,9 @@ export default {
       { value: 'summary', text: '要約' },
       { value: 'description', text: '詳細' },
       { value: 'steps_to_reproduce', text: '再現方法' },
+    ],
+    defaultCheckedNames: [
+      'description'
     ],
     selected: 'description',
     numberToShow: '130'
@@ -239,6 +258,10 @@ export default {
     }
   },
 
+  mounted() {
+    this.$store.commit('SAVE_CHECKEDNAMES', this.defaultCheckedNames)
+  },
+
   components: {
     NavigationHeaderBar,
     SideBar,
@@ -247,6 +270,7 @@ export default {
     TextLabel,
     ScoreTableRow,
     SelectMenu,
+    CheckboxLabel,
   }
 }
 </script>
