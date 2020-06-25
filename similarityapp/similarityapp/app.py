@@ -167,15 +167,24 @@ def calculateVectors(ticketsDict):
     for __id, ticket in ticketsDict.items():
         print('calculate {}'.format(__id))
         texts = []
-        a = ''
-        b = ''
-        c = ''
+
+        a = None
+        b = None
+        c = None
+
         if columns[0] in ticket:
             a = ticket[columns[0]]
         if columns[1] in ticket:
             b = ticket[columns[1]]
         if columns[2] in ticket:
             c = ticket[columns[2]]
+
+        if a is None:
+            a = ''
+        if b is None:
+            b = ''
+        if c is None:
+            c = ''
 
         texts.append(a)
         texts.append(b)

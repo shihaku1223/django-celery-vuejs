@@ -10,8 +10,6 @@ services:
     restart: always
     volumes:
       - /etc/localtime:/etc/localtime:ro
-    depends_on:
-      - app
 
   app:
     container_name: simapp

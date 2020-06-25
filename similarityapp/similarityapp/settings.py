@@ -32,12 +32,12 @@ MANTIS_HOST = 'http://osoft-de-c.olympus.co.jp/mantis/ipf3/app/api/soap/mantisco
 MANTIS_USER = 'ipf3-system'
 MANTIS_PASS = 'iY59RsDn'
 
-MONGO_HOST="mongodb://mongo:27017/"
+MONGO_HOST="mongodb://localhost:27017/"
 MONGO_USER="root"
 MONGO_PASS="root"
 CALCAPP_PATH = str(Path(BASE_DIR, 'similarityapp/app.py').resolve())
 
-CELERY_BROKER_URL = 'amqp://guest:guest@rabbit'
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost'
 CELERY_RESULT_BACKEND = 'django-db'
 #CELERY_RESULT_BACKEND = 'db+sqlite:///results.sqlite'
 #CELERY_CACHE_BACKEND = 'django-cache'
