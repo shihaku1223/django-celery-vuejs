@@ -106,7 +106,11 @@ def __retrieveVector(client, ticketId):
             "ticketId": 1,
             "description": 1,
             "summary": 1,
-            'steps_to_reproduce': 1
+            "steps_to_reproduce": 1,
+            "s_d": 1,
+            "s_d_s": 1,
+            "s_s": 1,
+            "d_s": 1
           }
         }
     ]
@@ -210,9 +214,6 @@ def calculateVectors(ticketsDict):
 # calculating function using calcuated vector data
 def calculateFetch(texts: list, idList: list, ticketsDict: dict, column: str):
     resultDict = {}
-    embed = hub.load(
-        "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
-
     calculated = {}
     client = MongoClient(args.mongo_host,
                          username=args.mongo_user,
@@ -223,10 +224,23 @@ def calculateFetch(texts: list, idList: list, ticketsDict: dict, column: str):
             vectors = __retrieveVector(client, __id)
             calculated[__id] = unserializeNumpy(vectors[column])
             idList.append(__id)
+
+
+    # get calculated vector
+    if texts is None:
+        targetVector = __retrieveVector(client, idList[0])
+
     client.close()
 
-    # calculate the vector of target to compare
-    result = embed(texts)
+    result = []
+    if texts is not None:
+        embed = hub.load(
+            "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
+
+        # calculate the vector of target to compare
+        result = embed(texts)
+    else:
+        result.append(unserializeNumpy(vectors[column]))
 
     # calculate the similarity
     length = len(idList)
@@ -319,7 +333,7 @@ def calculateVectorswithProject(issues: list):
 
 def calculateByTicketIdwithProject(_id: int, issue, issues: list, column: str):
 
-    texts = [issue[column]]
+    texts = None
     idList = [_id]
     result = {}
 

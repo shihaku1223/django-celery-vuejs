@@ -190,6 +190,8 @@ export default {
 
     sendTaskRequest(projectName) {
 
+      let selected = this.getSelectedColumn()
+
       let postData = {
         mantisId: parseInt(this.mantisId),
         projectName: projectName,
@@ -197,15 +199,31 @@ export default {
         numberToShow: parseInt(this.numberToShow),
         mantisUrl: this.mantisUrl,
         method: this.method,
-        column: this.selected,
+        column: selected,
       }
       return this.axios.post('/calcsim', postData)
       //return Promise.resolve('test')
     },
 
+    getSelectedColumn() {
+      let checkedNames = this.$store.state.target_checkbox.checkedNames
+      let m = checkedNames.length
+      let column = []
+      if(m == 1)
+        return checkedNames[0]
+
+      if(checkedNames.includes('summary'))
+        column.push('s')
+      if(checkedNames.includes('description'))
+        column.push('d')
+      if(checkedNames.includes('steps_to_reproduce'))
+        column.push('s')
+
+      return column.toString().replaceAll(',', '_')
+    },
+
     async onClick(e) {
       let loader = this.$loading.show()
-
       this.results = []
       console.log('calculate button click')
       console.log(this.mantisId)
