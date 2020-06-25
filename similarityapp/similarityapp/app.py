@@ -240,7 +240,7 @@ def calculateFetch(texts: list, idList: list, ticketsDict: dict, column: str):
         # calculate the vector of target to compare
         result = embed(texts)
     else:
-        result.append(unserializeNumpy(vectors[column]))
+        result.append(unserializeNumpy(targetVector[column]))
 
     # calculate the similarity
     length = len(idList)
