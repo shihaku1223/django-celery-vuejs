@@ -186,7 +186,7 @@ export default {
           }
           if(p.data.status == "failed") {
             clearInterval(intervalId)
-            reject(p.data)
+            reject("Task " + task_id + " failed")
           }
         }, 3000)
       })
@@ -195,6 +195,10 @@ export default {
     sendTaskRequest(projectName) {
 
       let selected = this.getSelectedColumn()
+
+      if(selected.length == 0) {
+        return Promise.reject('Please select target to calculate.')
+      }
 
       let postData = {
         mantisId: parseInt(this.mantisId),
@@ -246,7 +250,7 @@ export default {
         tasks = await Promise.all(requests)
       } catch(err) {
         loader.hide()
-        alert('Failed')
+        alert(err)
         return
       }
 
