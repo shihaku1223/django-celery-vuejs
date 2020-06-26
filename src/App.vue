@@ -227,7 +227,7 @@ export default {
       if(checkedNames.includes('steps_to_reproduce'))
         column.push('s')
 
-      return column.toString().replaceAll(',', '_')
+      return column.join("_")
     },
 
     async onClick(e) {
