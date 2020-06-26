@@ -184,6 +184,10 @@ export default {
             clearInterval(intervalId)
             resolve(p.data)
           }
+          if(p.data.status == "failed") {
+            clearInterval(intervalId)
+            reject(p.data)
+          }
         }, 3000)
       })
     },
@@ -237,7 +241,14 @@ export default {
           return this.waitForTaskSuccess(r.data.task_id)
       })
 
-      let tasks = await Promise.all(requests)
+      let tasks = undefined
+      try {
+        tasks = await Promise.all(requests)
+      } catch(err) {
+        loader.hide()
+        alert('Failed')
+        return
+      }
 
       let result = tasks[0].result
 
