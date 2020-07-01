@@ -93,6 +93,23 @@ def get_issues_by_projectId(projectId, host, username, password):
     client.close()
     return list(result)
 
+def get_issue_by_ticketId(client, ticketId):
+
+    pipeline = [
+        { "$match": { "$and":[ { 'id': ticketId  } ] } },
+        { "$project": {
+            "id": 1,
+            "summary": 1,
+            "description": 1,
+            "steps_to_reproduce": 1,
+            "project": 1,
+        } }
+    ]
+    db = client['mantis']
+    result = db.issues.aggregate(pipeline)
+
+    return list(result)[0]
+
 
 def cos_sim(v1, v2):
     return numpy.dot(v1, v2) / (numpy.linalg.norm(v1) * numpy.linalg.norm(v2))
@@ -119,8 +136,31 @@ def __retrieveVector(client, ticketId):
     db = client['similarity']
     result = db.vectors.aggregate(pipeline)
 
-    return list(result)[0]
+    array = list(result)
+    if len(array) == 0:
+        try:
+            issue = get_issue_by_ticketId(client, ticketId)
+        except:
+            url = "http://osoft-de-c.olympus.co.jp/mantis/ipf3/app/api/soap/mantisconnect.php?wsdl"
+            mantisConnector = Connector(url, 'ipf3-system', 'iY59RsDn')
+            mantisConnector.connect()
+            issue = mantisConnector.getIssue(ticketId)
+            insertIssueToDB(client, issue)
+            issue = get_issue_by_ticketId(client, ticketId)
+            
+        ticketsDict = {}
+        ticketsDict[ticketId] = issue
+        r = calculateVectors(ticketsDict)
+        return __retrieveVector(client, ticketId)
 
+    return array[0]
+
+def insertIssueToDB(client, issue):
+    print('insert')
+    obj = zeep.helpers.serialize_object(issue)
+    db = client['mantis']
+    collection = db['issues']
+    collection.insert_one(obj)
 
 def retrieveVector(ticketId, host, username, password):
     client = MongoClient(host, username=username, password=password)
