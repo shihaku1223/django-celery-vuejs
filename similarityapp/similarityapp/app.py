@@ -15,6 +15,13 @@ import zeep
 
 from pymongo import MongoClient
 
+def get_error_code(message):
+    print(message)
+
+    if message == "Issue does not exist.":
+        return 2
+    return 0
+
 def insert_vectors(ticketId,
         summary, description, steps,
         s_d, s_s, s_d_s, d_s,
@@ -144,11 +151,7 @@ def __retrieveVector(client, ticketId):
         try:
             issue = get_issue_by_ticketId(client, ticketId)
         except:
-            url = "http://osoft-de-c.olympus.co.jp/mantis/ipf3/app/api/soap/mantisconnect.php?wsdl"
-            mantisConnector = Connector(url, 'ipf3-system', 'iY59RsDn')
-            mantisConnector.connect()
-            issue = mantisConnector.getIssue(ticketId)
-            insertIssueToDB(client, issue)
+            fetchTicketFromMantis(client, ticketId)
             issue = get_issue_by_ticketId(client, ticketId)
 
         ticketsDict = {}
@@ -157,6 +160,18 @@ def __retrieveVector(client, ticketId):
         return __retrieveVector(client, ticketId)
 
     return array[0]
+
+def fetchTicketFromMantis(client, ticketId):
+    url = "http://osoft-de-c.olympus.co.jp/mantis/ipf3/app/api/soap/mantisconnect.php?wsdl"
+    mantisConnector = Connector(url, 'ipf3-system', 'iY59RsDn')
+    mantisConnector.connect()
+    try:
+        issue = mantisConnector.getIssue(ticketId)
+    except Exception as e:
+        client.close()
+        sys.exit(get_error_code(e.message))
+
+    insertIssueToDB(client, issue)
 
 def insertIssueToDB(client, issue):
     print('insert')
@@ -388,7 +403,7 @@ def calculateVectorswithProject(issues: list):
 
     r = calculateVectors(ticketsDict)
 
-def calculateByTicketIdwithProject(_id: int, issue, issues: list, column: str):
+def calculateByTicketIdwithProject(_id: int, issues: list, column: str):
 
     texts = None
     idList = [_id]
@@ -567,9 +582,8 @@ if __name__ == '__main__':
             args.mongo_host, args.mongo_user, args.mongo_pass)
 
         if args.id is not None:
-            issue = mantisConnector.getIssue(args.id)
             result = calculateByTicketIdwithProject(
-                args.id, issue, issues, args.column)
+                args.id, issues, args.column)
         elif args.text is not None:
             result = calculateByTextwithProject(
                 args.text, issues, args.column)
