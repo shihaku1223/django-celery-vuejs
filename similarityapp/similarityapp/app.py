@@ -163,7 +163,10 @@ def insertIssueToDB(client, issue):
     obj = zeep.helpers.serialize_object(issue)
     db = client['mantis']
     collection = db['issues']
-    collection.insert_one(obj)
+    collection.replace_one(
+        { 'id': obj['id'] },
+        obj,
+        upsert=True)
 
 def retrieveVector(ticketId, host, username, password):
     client = MongoClient(host, username=username, password=password)
