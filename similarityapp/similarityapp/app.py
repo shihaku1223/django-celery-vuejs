@@ -34,7 +34,10 @@ def insert_vectors(ticketId,
     obj['d_s'] = d_s
 
     try:
-        ids = collect.insert_one(obj)
+        ids = collect.replace_one(
+            { 'ticketId': ticketId },
+            obj,
+            upsert=True)
     except Exception as e:
         raise(e)
 
@@ -147,7 +150,7 @@ def __retrieveVector(client, ticketId):
             issue = mantisConnector.getIssue(ticketId)
             insertIssueToDB(client, issue)
             issue = get_issue_by_ticketId(client, ticketId)
-            
+
         ticketsDict = {}
         ticketsDict[ticketId] = issue
         r = calculateVectors(ticketsDict)
