@@ -4,6 +4,7 @@ import argparse
 import json, zeep
 from mantis_soap.Connector import Connector
 from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 
 host="mongodb://localhost:27017/"
 username="root"
@@ -14,6 +15,16 @@ client = MongoClient(host, username=username, password=password)
 
 db = client[dbname]
 collect = db[collection]
+
+def insert_ticket_and_update(objs):
+    for obj in objs:
+        try:
+            ids = collect.replace_one(
+                { 'id': obj['id'] },
+                obj,
+                upsert=True)
+        except Exception as e:
+            raise e
 
 if __name__ == '__main__':
 
@@ -46,11 +57,8 @@ if __name__ == '__main__':
         print("Issues count: {} {}".format(str(len(issues)), i),
               flush=True)
 
-        obj = zeep.helpers.serialize_object(issues)
-        try:
-            ids = collect.insert_many(obj)
-        except Exception as e:
-            print(e)
+        objs = zeep.helpers.serialize_object(issues)
+        insert_ticket_and_update(objs)
 
         i = i + 1
 
