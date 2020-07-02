@@ -92,7 +92,10 @@ def executeCalculation(self, mantisId,
         """
         binaryPath = Path(CALCAPP_PATH)
         result = execute(['python3', CALCAPP_PATH], args)
-        if result['returncode'] != 0:
+        if result['returncode'] == 2:
+            task.message = '登録されていないチケットIDです。'
+            raise Exception(task.message)
+        elif result['returncode'] != 0:
             print(result['stdout'])
             print(result['stderr'])
             raise Exception('error')

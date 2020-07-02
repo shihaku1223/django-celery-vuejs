@@ -28,4 +28,6 @@ class CalcTask(models.Model):
 
     status = models.CharField(max_length=20)
 
+    message = models.CharField(max_length=80, default='')
+
     timestamp = models.DateTimeField(auto_now_add=True)
