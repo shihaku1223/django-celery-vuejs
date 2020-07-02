@@ -186,6 +186,9 @@ export default {
           }
           if(p.data.status == "failed") {
             clearInterval(intervalId)
+            if(p.data.message != '') {
+              reject(p.data.message)
+            }
             reject("Task " + task_id + " failed")
           }
         }, 3000)
