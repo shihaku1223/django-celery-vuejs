@@ -3,6 +3,7 @@ import sys
 from similarityapp.similarityapp.utils import execute
 from mantis_soap.Connector import Connector
 from mantisconnect.project import Issue
+from pathlib import Path
 import argparse
 
 if __name__ == '__main__':
@@ -16,7 +17,8 @@ if __name__ == '__main__':
     connector.connect()
 
     print("Mantis SOAP MC Version:" + connector.getVersion())
-    app_path = './similarityapp/similarityapp/app.py'
+    app_path = Path(Path(__file__).parent.absolute(),
+        './similarityapp/similarityapp/app.py')
 
     projectId = connector.getProjectId(args.project)
     print(projectId)
