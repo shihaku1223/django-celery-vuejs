@@ -293,30 +293,24 @@ export default {
       loader.hide()
     },
     setDefaultValue() {
-      let _method = sessionStorage.getItem('method')
-      if(_method != undefined)
-        this.method = _method
+      if(localStorage.method)
+        this.method = localStorage.method
 
-      let _projectName = sessionStorage.getItem('projectName')
-      if(_projectName != undefined)
-        this.projectName = _projectName
+      if(localStorage.projectName)
+        this.projectName = localStorage.projectName
 
-      let _textPhrase = sessionStorage.getItem('textPhrase')
-      if(_textPhrase != undefined)
-        this.textPhrase = _textPhrase
+      if(localStorage.textPhrase)
+        this.textPhrase = localStorage.textPhrase
 
-      let _mantisId = sessionStorage.getItem('mantisId')
-      if(_mantisId != undefined)
-        this.mantisId = _mantisId
+      if(localStorage.mantisId)
+        this.mantisId = localStorage.mantisId
 
-      let _number = sessionStorage.getItem('number')
-      if(_number != undefined)
-        this.numberToShow = _number
+      if(localStorage.numberToShow)
+        this.numberToShow = localStorage.numberToShow
 
-      let _defaultChecked = sessionStorage.getItem('defaultChecked')
-      if(_defaultChecked != undefined) {
+      if(localStorage.checkedNames) {
         this.$store.commit('SAVE_CHECKEDNAMES',
-          _defaultChecked.split(','))
+          localStorage.checkedNames.split(','))
       }
       else
         this.$store.commit('SAVE_CHECKEDNAMES',
@@ -326,19 +320,19 @@ export default {
 
   watch: {
     projectName: (val) => {
-      sessionStorage.setItem('projectName', val)
+      localStorage.projectName = val
     },
     textPhrase: (val) => {
-      sessionStorage.setItem('textPhrase', val)
+      localStorage.textPhrase = val
     },
     method: (val) => {
-      sessionStorage.setItem('method', val)
+      localStorage.method = val
     },
     numberToShow: (val) => {
-      sessionStorage.setItem('number', val)
+      localStorage.numberToShow = val
     },
     mantisId: (val) => {
-      sessionStorage.setItem('mantisId', val)
+      localStorage.mantisId = val
     },
   },
 
