@@ -29,6 +29,7 @@ export default {
       },
       set(value) {
         this.$store.commit('SAVE_CHECKEDNAMES', value)
+        sessionStorage.setItem('defaultChecked', value)
       }
     }
   },

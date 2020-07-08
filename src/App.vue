@@ -157,7 +157,7 @@ export default {
 
   data: () => ({
     taskData: 'Hello',
-    projectName: 'CV2KApp窓口,OTV_PF',
+    projectName: 'CV2K_App',
     mantisUrl: 'http://10.156.2.84/mantis/ipf3/app',
     mantisId: '46914',
     textPhrase: 'ユーザー設定画面を操作中に、モダコンの接続が切 れて',
@@ -291,11 +291,59 @@ export default {
       }
       this.results = result.slice(0, numberToShow)
       loader.hide()
-    }
+    },
+    setDefaultValue() {
+      let _method = sessionStorage.getItem('method')
+      if(_method != undefined)
+        this.method = _method
+
+      let _projectName = sessionStorage.getItem('projectName')
+      if(_projectName != undefined)
+        this.projectName = _projectName
+
+      let _textPhrase = sessionStorage.getItem('textPhrase')
+      if(_textPhrase != undefined)
+        this.textPhrase = _textPhrase
+
+      let _mantisId = sessionStorage.getItem('mantisId')
+      if(_mantisId != undefined)
+        this.mantisId = _mantisId
+
+      let _number = sessionStorage.getItem('number')
+      if(_number != undefined)
+        this.numberToShow = _number
+
+      let _defaultChecked = sessionStorage.getItem('defaultChecked')
+      if(_defaultChecked != undefined) {
+        this.$store.commit('SAVE_CHECKEDNAMES',
+          _defaultChecked.split(','))
+      }
+      else
+        this.$store.commit('SAVE_CHECKEDNAMES',
+          this.defaultCheckedNames)
+    },
+  },
+
+  watch: {
+    projectName: (val) => {
+      sessionStorage.setItem('projectName', val)
+    },
+    textPhrase: (val) => {
+      sessionStorage.setItem('textPhrase', val)
+    },
+    method: (val) => {
+      sessionStorage.setItem('method', val)
+    },
+    numberToShow: (val) => {
+      sessionStorage.setItem('number', val)
+    },
+    mantisId: (val) => {
+      sessionStorage.setItem('mantisId', val)
+    },
   },
 
   mounted() {
-    this.$store.commit('SAVE_CHECKEDNAMES', this.defaultCheckedNames)
+    this.setDefaultValue()
   },
 
   components: {
