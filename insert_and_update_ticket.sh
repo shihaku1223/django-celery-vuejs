@@ -2,8 +2,8 @@
 
 path=$(dirname "$0")
 
-USER=10079186
-PASS=!vp5QmS1223
+USER=ipf3-system
+PASS=iY59RsDn
 
 export http_proxy=http://proxy.olympus.co.jp:8080
 export https_proxy=http://proxy.olympus.co.jp:8080
