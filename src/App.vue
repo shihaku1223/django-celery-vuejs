@@ -299,8 +299,11 @@ export default {
       if(localStorage.projectName)
         this.projectName = localStorage.projectName
 
-      if(localStorage.textPhrase)
+      if(localStorage.textPhrase === '')
+        this.textPhrase = ''
+      else if(localStorage.textPhrase) {
         this.textPhrase = localStorage.textPhrase
+      }
 
       if(localStorage.mantisId)
         this.mantisId = localStorage.mantisId
@@ -323,7 +326,11 @@ export default {
       localStorage.projectName = val
     },
     textPhrase: (val) => {
-      localStorage.textPhrase = val
+      if(val === '') {
+        localStorage.textPhrase = ''
+      }
+      else
+        localStorage.textPhrase = val
     },
     method: (val) => {
       localStorage.method = val
