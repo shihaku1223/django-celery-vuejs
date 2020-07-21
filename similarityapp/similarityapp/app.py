@@ -12,6 +12,8 @@ import csv
 import sys
 import io
 import zeep
+import os
+os.environ["TFHUB_CACHE_DIR"] = '/tmp/tfhub'
 
 from pymongo import MongoClient
 
@@ -219,7 +221,7 @@ def unserializeNumpy(b):
 
 def calculateVectors(ticketsDict):
     embed = hub.load(
-        "/root/universal-sentence-encoder-multilingual/")
+        "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
 
     columns = [
         'summary',
@@ -307,7 +309,7 @@ def calculateFetch(texts: list, idList: list, ticketsDict: dict, column: str):
     result = []
     if texts is not None:
         embed = hub.load(
-            "/root/universal-sentence-encoder-multilingual/")
+            "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
 
         # calculate the vector of target to compare
         result = embed(texts)
@@ -337,7 +339,7 @@ def calculate(texts: list, idList: list, ticketsDict: dict, column: str):
     resultDict = {}
 
     embed = hub.load(
-        "/root/universal-sentence-encoder-multilingual/")
+        "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
 
     # put the text of specified ticket
     for __id, ticket in ticketsDict.items():
