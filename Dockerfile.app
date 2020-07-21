@@ -17,6 +17,8 @@ ADD similarityapp ${DIR}
 RUN python manage.py collectstatic --noinput
 
 RUN mkdir ${DIR}/celery
+RUN mkdir /root/universal-sentence-encoder-multilingual
+ADD universal-sentence-encoder-multilingual_3.tar.gz /root/universal-sentence-encoder-multilingual
 
 ENTRYPOINT []
 CMD python manage.py makemigrations \

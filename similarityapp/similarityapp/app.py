@@ -219,7 +219,7 @@ def unserializeNumpy(b):
 
 def calculateVectors(ticketsDict):
     embed = hub.load(
-        "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
+        "/root/universal-sentence-encoder-multilingual/")
 
     columns = [
         'summary',
@@ -307,7 +307,7 @@ def calculateFetch(texts: list, idList: list, ticketsDict: dict, column: str):
     result = []
     if texts is not None:
         embed = hub.load(
-            "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
+            "/root/universal-sentence-encoder-multilingual/")
 
         # calculate the vector of target to compare
         result = embed(texts)
@@ -337,7 +337,7 @@ def calculate(texts: list, idList: list, ticketsDict: dict, column: str):
     resultDict = {}
 
     embed = hub.load(
-        "https://tfhub.dev/google/universal-sentence-encoder-multilingual/3")
+        "/root/universal-sentence-encoder-multilingual/")
 
     # put the text of specified ticket
     for __id, ticket in ticketsDict.items():
