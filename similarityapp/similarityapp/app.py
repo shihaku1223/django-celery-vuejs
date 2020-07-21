@@ -573,11 +573,6 @@ if __name__ == '__main__':
             sys.exit(0)
 
     if args.project is not None:
-        url = "http://osoft-de-c.olympus.co.jp/mantis/ipf3/app/api/soap/mantisconnect.php?wsdl"
-        mantisConnector = Connector(url, args.user, args.password)
-        mantisConnector.connect()
-
-        projectId = mantisConnector.getProjectId(args.project)
         issues = get_issues_by_project(args.project,
             args.mongo_host, args.mongo_user, args.mongo_pass)
 
