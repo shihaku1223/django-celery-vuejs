@@ -13,7 +13,7 @@
     </div>
     <div class="dtc bg-lightest-silver ba b--silver"
       style="min-width: 50px;">
-      {{ score }}
+      {{ percentage }}
     </div>
   </div>
 
@@ -38,6 +38,12 @@ export default {
   },
 
   computed: {
+    percentage() {
+      if (isNaN(this.score))
+        return this.score
+      let val = Math.round(parseFloat(this.score)*10000) / 100
+      return val.toString() + '%'
+    },
   },
 
   mounted() {
