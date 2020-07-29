@@ -25,6 +25,7 @@
 
             <text-label text='Target Project' />
             <v-treeview
+              v-model="selectedProject"
               :style="treeViewStyle"
               selectable
               selected-color="red"
@@ -179,13 +180,14 @@ export default {
       'description'
     ],
     selected: 'description',
+    selectedProject: [],
     treeViewStyle: {
       overflowY: 'auto',
       width: '100%',
       height: '200px'
     },
     numberToShow: '130',
-      items: [
+    items: [
         {
           id: 113,
           name: 'CV2K製品',
@@ -364,7 +366,7 @@ export default {
           ]
         },
         { id: 157, name: '教育用testPJ' }
-      ],
+    ],
   }),
 
   methods: {
@@ -425,17 +427,40 @@ export default {
       return column.join("_")
     },
 
+    getSelectedProjectNames(itemList, projectNames) {
+      if (itemList.length == 0)
+        return
+
+      for(let i = 0; i < itemList.length; i++) {
+        let item = itemList[i]
+
+        if(this.selectedProject.includes(item.id)) {
+          projectNames.push(item.name)    
+        }
+
+        if(item.children !== undefined) {
+          let result = this.getSelectedProjectNames(item.children, projectNames)
+        }
+      }
+    },
+
     async onClick(e) {
+      if(this.selectedProject.length == 0)
+        return
+
+      let projectNames = []
+      this.getSelectedProjectNames(this.items, projectNames)
+      console.log(this.selectedProject)
+      console.log(projectNames)
+
       let loader = this.$loading.show()
       this.results = []
       console.log('calculate button click')
       console.log(this.mantisId)
-      console.log(this.projectName.split(','))
       console.log(this.textPhrase)
       console.log(this.mantisUrl)
 
-      let projectNameList = this.projectName.split(',')
-      let requests = projectNameList.map(async (name) => {
+      let requests = projectNames.map(async (name) => {
           let r = await this.sendTaskRequest(name)
           return this.waitForTaskSuccess(r.data.task_id)
       })
@@ -510,6 +535,10 @@ export default {
       else
         this.$store.commit('SAVE_CHECKEDNAMES',
           this.defaultCheckedNames)
+
+      if(localStorage.selectedProject)
+        this.selectedProject = localStorage.selectedProject.split(',')
+
     },
   },
 
@@ -533,6 +562,9 @@ export default {
     mantisId: (val) => {
       localStorage.mantisId = val
     },
+    selectedProject: (val) => {
+      localStorage.selectedProject = val
+    }
   },
 
   mounted() {
