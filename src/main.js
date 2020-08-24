@@ -11,6 +11,7 @@ import 'vue-loading-overlay/dist/vue-loading.css'
 Vue.use(Loading)
 
 import App from './App'
+import Chart from './Chart'
 import { createStore } from '@/store/index'
 import { createRouter } from './router'
 
@@ -30,8 +31,8 @@ new Vue({
   el: '#app',
   store: store,
   router: router,
-  components: { App },
-  template: '<App/>',
+  components: { Chart },
+  template: '<Chart/>',
 
   created: () => {
     console.log('created')
