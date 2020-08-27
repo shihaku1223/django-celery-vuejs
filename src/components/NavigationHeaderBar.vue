@@ -8,6 +8,7 @@
         rounded
         background-color="grey"
         prepend-inner-icon="search"
+        v-on:keyup.enter="onEnter"
       ></v-text-field>
     </div>
   </div>
@@ -44,7 +45,11 @@ export default {
     headerStype() {
     }
   },
-
+  methods: {
+    onEnter() {
+      console.log('enter')
+    }
+  }
 }
 
 </script>

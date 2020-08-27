@@ -1,15 +1,59 @@
 <template>
-  <v-app>
+  <div class='container'>
+    <div class='content'>
+      <div class="w-100 flex flex-row">
+        <div class="flex ma2"
+          style="min-width: 300px"
+        >
+        <text-label
+          style="width: 200px"
+          text='Mantis Url' />
 
-  <div>
-    <navigation-header-bar/>
-    <router-view/>
+        <text-input v-model="mantisUrl"
+          readonly=true
+          placeHolder='mantis ticket id'
+          style="width: 500px"
+          />
+        </div>
+      </div>
+
+      <div class="dark-gray f4 normal mt0 bb b--silver" />
+       
+      <div class="w-100 flex flex-row">
+        <div class="flex ma2"
+          style="min-width: 300px"
+        >
+
+        <text-label
+          style="width: 200px"
+          text='Target Project' />
+          <v-treeview
+            v-model="selectedProject"
+            :style="treeViewStyle"
+            selectable
+            selected-color="red"
+            :items="items"
+          />
+        </div>
+      </div>
+      <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
+      <!-- table -->
+    </div>
   </div>
-
-  </v-app>
 </template>
 
 <style scoped>
+
+.container {
+  width: 100%;
+  display: flex;
+}
+
+.content {
+  position: relative;
+  //overflow-y: scroll;
+  width: 100%;
+}
 
 </style>
 

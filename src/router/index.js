@@ -8,13 +8,18 @@ let About = {
   template: '<h2>About</h2>'
 }
 
+import SearchPage from '@/components/SearchPage'
+import SearchResultPage from '@/components/SearchResultPage'
+
 let createRouter = () => {
   const routes = [
     { path: '/about', name: 'about', component: About },
+    { path: '/', name: 'home', component: SearchPage },
+    { path: '/search', name: 'search', component: SearchResultPage },
   ]
 
   const router = new Router({
-    routes
+    routes: routes
   })
 
   return router
