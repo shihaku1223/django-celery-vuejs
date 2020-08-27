@@ -23,7 +23,7 @@
           </div>
         </div>
 
-        <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
+        <div class="dark-gray f4 normal mt0 bb b--silver" />
        
         <div class="w-100 flex flex-row">
           <div class="flex ma2"

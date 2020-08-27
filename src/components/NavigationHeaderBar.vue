@@ -1,29 +1,20 @@
 <template>
-  <div class='navigation items-stretch bg-purple shadow-outer-1'>
-    Search System
+  <div class='navigation bg-purple'>
+    <div>
+      Mantis Keyword Search System
 
-    <v-text-field
-      :style="searchTextFieldStyle"
-      rounded
-      background-color="grey"
-      prepend-inner-icon="search"
-    ></v-text-field>
+      <v-text-field
+        :style="searchTextFieldStyle"
+        rounded
+        background-color="grey"
+        prepend-inner-icon="search"
+      ></v-text-field>
+    </div>
   </div>
 
 </template>
 
 <style scoped>
-
-.items-stretch {
-  -ms-flex-align: stretch;
-  -webkit-box-align: stretch;
-  align-items: stretch;
-}
-
-.shadow-outer-1 {
-  -webkit-box-shadow: 0 0 0 1px rgba(89,105,129,0.1),0 1px 3px 0 rgba(89,105,129,0.1),0 1px 2px 0 rgba(0,0,0,0.05);
-  box-shadow: 0 0 0 1px rgba(89,105,129,0.1),0 1px 3px 0 rgba(89,105,129,0.1),0 1px 2px 0 rgba(0,0,0,0.05);
-}
 
 .navigation {
   position: -webkit-sticky;
@@ -31,9 +22,9 @@
   top: 0;
   color: white;
   z-index: 1;
+  justify-content: center;
 
   display: flex;
-  height: 70px;
   font-size: 14px;
   font-family: "salesforce-sans", -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif;
 }
@@ -47,6 +38,7 @@ export default {
 
   data: () => ({
     searchTextFieldStyle: {
+      width: '400px'
     },
   }),
   computed: {

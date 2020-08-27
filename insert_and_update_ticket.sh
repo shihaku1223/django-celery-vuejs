@@ -15,5 +15,5 @@ PROJECT_LIST=('CV2K製品' 'IPF-3 OTV製品' 'VE2製品試験' 'ツール' \
 for project in "${PROJECT_LIST[@]}"; do
     echo $project
     python3 $path/insert.py --user $USER --password $PASS --project $project
-    python3 $path/calc.py --project $project
+    #python3 $path/calc.py --project $project
 done
