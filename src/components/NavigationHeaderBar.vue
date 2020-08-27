@@ -1,6 +1,13 @@
 <template>
   <div class='navigation items-stretch bg-purple shadow-outer-1'>
-    Similarity Calculator
+    Search System
+
+    <v-text-field
+      :style="searchTextFieldStyle"
+      rounded
+      background-color="grey"
+      prepend-inner-icon="search"
+    ></v-text-field>
   </div>
 
 </template>
@@ -39,9 +46,9 @@ export default {
   name: 'navigation-header-bar',
 
   data: () => ({
-    taskData: 'Hello'
+    searchTextFieldStyle: {
+    },
   }),
-
   computed: {
     headerStype() {
     }
