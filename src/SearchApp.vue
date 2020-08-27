@@ -45,8 +45,6 @@
 
         <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
 
-        <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
-
         <!-- table -->
       </div>
     </div>
@@ -64,9 +62,8 @@
 
 .content {
   position: relative;
-  overflow-y: scroll;
+  //overflow-y: scroll;
   width: 100%;
-  height: calc(100vh - 70px);
 }
 
 </style>

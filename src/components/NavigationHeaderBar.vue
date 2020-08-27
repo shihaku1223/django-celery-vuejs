@@ -1,7 +1,7 @@
 <template>
   <div class='navigation bg-purple'>
     <div>
-      Mantis Keyword Search System
+     Mantis Keyword Search System
 
       <v-text-field
         :style="searchTextFieldStyle"
@@ -11,20 +11,19 @@
       ></v-text-field>
     </div>
   </div>
-
 </template>
 
 <style scoped>
 
 .navigation {
-  position: -webkit-sticky;
   position: sticky;
   top: 0;
   color: white;
   z-index: 1;
-  justify-content: center;
 
   display: flex;
+  justify-content: center;
+  align-items: center;
   font-size: 14px;
   font-family: "salesforce-sans", -apple-system, BlinkMacSystemFont, 'avenir next', avenir, helvetica, 'helvetica neue', ubuntu, roboto, noto, 'segoe ui', arial, sans-serif;
 }
