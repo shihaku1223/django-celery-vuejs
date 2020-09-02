@@ -15,7 +15,12 @@ let createRouter = () => {
   const routes = [
     { path: '/about', name: 'about', component: About },
     { path: '/', name: 'home', component: SearchPage },
-    { path: '/search', name: 'search', component: SearchResultPage },
+    {
+      path: '/search',
+      name: 'search',
+      component: SearchResultPage,
+      props: (route) => ({ query: route.query.q })
+    },
   ]
 
   const router = new Router({

@@ -5,6 +5,7 @@
 
       <v-text-field
         :style="searchTextFieldStyle"
+        v-model="queryString"
         rounded
         background-color="grey"
         prepend-inner-icon="search"
@@ -33,6 +34,8 @@
 
 <script>
 
+import { QUERY_STRING } from '../store/modules/mutation-types'
+
 export default {
   name: 'navigation-header-bar',
 
@@ -42,14 +45,27 @@ export default {
     },
   }),
   computed: {
-    headerStype() {
-    }
+    queryString: {
+      set(value) {
+        this.$store.commit(QUERY_STRING, value)
+      },
+      get() {
+        return this.$store.state.search_result.queryString
+      }
+    },
   },
   methods: {
-    onEnter() {
-      console.log('enter')
+    async onEnter() {
+      console.log(this.queryString)
+
+      this.$router.push({
+        name: 'search',
+        query: {
+          q: this.queryString
+        }
+      }).catch(() => {})
     }
-  }
+  },
 }
 
 </script>
