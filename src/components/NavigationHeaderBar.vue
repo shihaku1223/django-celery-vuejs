@@ -11,6 +11,13 @@
         prepend-inner-icon="search"
         v-on:keyup.enter="onEnter"
       ></v-text-field>
+
+      <div class="dark-gray f4 normal mt0 bb b--silver" />
+      <div class="flex">
+        <button class="hk-button-sm--primary"
+          @click="onOptionClick">オプション
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -36,8 +43,13 @@
 
 import { QUERY_STRING } from '../store/modules/mutation-types'
 
+import SearchMixin from '../mixins/search'
+import projectTreeItem from '@/constants/projectTreeItem'
+
 export default {
   name: 'navigation-header-bar',
+
+  mixins: [ SearchMixin ],
 
   data: () => ({
     searchTextFieldStyle: {
@@ -53,19 +65,39 @@ export default {
         return this.$store.state.search_result.queryString
       }
     },
+    projectString() {
+      let projectNames = []
+      let value = this.$store.state.search_result.targetProjects
+      this.getSelectedProjectNames(this.items, value, projectNames)
+
+      return projectNames.join()
+    },
+    items() {
+      return projectTreeItem
+    }
+
   },
   methods: {
+    onOptionClick() {
+      this.$router.push({
+        name: 'home',
+      }).catch(() => {})
+    },
+
     async onEnter() {
       console.log(this.queryString)
+      console.log(this.projectString)
 
       this.$router.push({
         name: 'search',
         query: {
-          q: this.queryString
+          q: this.queryString,
+          p: this.projectString
         }
       }).catch(() => {})
     }
   },
+
 }
 
 </script>

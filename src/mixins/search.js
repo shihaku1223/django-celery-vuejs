@@ -1,7 +1,25 @@
 export default {
   methods: {
-    searchKeyword(query) {
-      return this.axios.get(`/search/?q=${query}`)
+    searchKeyword(query, projects) {
+      return this.axios.get(`/search/?q=${query}&p=${projects}`)
+    },
+
+    getSelectedProjectNames(itemList, selectedItems, projectNames) {
+      if (itemList.length == 0)
+        return
+
+      for(let i = 0; i < itemList.length; i++) {
+        let item = itemList[i]
+
+        if(selectedItems.includes(item.id)) {
+          projectNames.push(item.name)    
+        }
+
+        if(item.children !== undefined) {
+          let result = this.getSelectedProjectNames(
+            item.children, selectedItems, projectNames)
+        }
+      }
     },
   },
 }

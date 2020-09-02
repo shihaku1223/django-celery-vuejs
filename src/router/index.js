@@ -19,7 +19,10 @@ let createRouter = () => {
       path: '/search',
       name: 'search',
       component: SearchResultPage,
-      props: (route) => ({ query: route.query.q })
+      props: (route) => ({
+        query: route.query.q,
+        projects: route.query.p
+      })
     },
   ]
 

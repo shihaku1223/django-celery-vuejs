@@ -54,18 +54,21 @@ export default {
   props: {
     query: {
       type: String
+    },
+    projects: {
+      type: String
     }
   },
 
 	methods: {
-		async search(queryString) {
-      const response = await this.searchKeyword(queryString)
+		async search(queryString, projects) {
+      const response = await this.searchKeyword(queryString, projects)
       this.$store.dispatch(SEARCH_RESULT, response.data.result)
 		},
 	},
   mounted() {
     this.$store.commit(QUERY_STRING, this.query)
-		this.search(this.query)
+		this.search(this.query, this.projects)
   },
 
   components: {
