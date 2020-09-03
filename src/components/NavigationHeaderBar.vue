@@ -14,7 +14,7 @@
 
       <div class="dark-gray f4 normal mt0 bb b--silver" />
       <div class="flex">
-        <button class="hk-button-sm--primary"
+        <button v-if="showOptionButton" class="hk-button-sm--primary"
           @click="onOptionClick">オプション
         </button>
       </div>
@@ -74,9 +74,17 @@ export default {
     },
     items() {
       return projectTreeItem
+    },
+    showOptionButton() {
+      return this.$route.name != "home"
     }
-
   },
+
+  watch: {
+    $route(to) {
+    }
+  },
+
   methods: {
     onOptionClick() {
       this.$router.push({

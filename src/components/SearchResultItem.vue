@@ -1,7 +1,10 @@
 <template>
-  <div>
+  <v-card>
     {{ result.id }}
-  </div>
+    <v-card-text>
+      {{ result.description }}
+    </v-card-text>
+  </v-card>
 </template>
 
 
@@ -11,6 +14,7 @@ export default {
   props: [ 'result' ],
 
   mounted() {
+    console.log(this.result)
   }
 }
 </script>
