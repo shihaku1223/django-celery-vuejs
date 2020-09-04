@@ -19,4 +19,4 @@ RUN python manage.py collectstatic --noinput
 ENTRYPOINT []
 CMD python manage.py makemigrations \
   && python manage.py migrate \
-  && uwsgi uwsgi.ini
+  && python manage.py runserver 0:8000
