@@ -16,15 +16,7 @@ ADD similarityapp ${DIR}
 
 RUN python manage.py collectstatic --noinput
 
-RUN mkdir ${DIR}/celery
-RUN mkdir -p /tmp/tfhub/26c892ffbc8d7b032f5a95f316e2841ed4f1608c
-ADD universal-sentence-encoder-multilingual_3.tar.gz /tmp/tfhub/26c892ffbc8d7b032f5a95f316e2841ed4f1608c
-
 ENTRYPOINT []
 CMD python manage.py makemigrations \
   && python manage.py migrate \
-  && celery worker --detach -A similarityapp \
-      -l info \
-      --pidfile=${DIR}/celery/%n.pid \
-      --logfile=${DIR}/celery/%n%I.log \
   && uwsgi uwsgi.ini
