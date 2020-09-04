@@ -19,6 +19,7 @@ import { createRouter } from './router'
 
 import vuetify from '@/plugins/vuetify'
 import '@/css/app.css'
+import '@/css/purple3.min.css'
 
 Vue.config.productionTip = false
 
