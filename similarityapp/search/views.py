@@ -43,6 +43,8 @@ class SearchView(GenericAPIView):
                 "project.name": 1,
                 "summary": 1,
                 "description": 1,
+                "steps_to_reproduce": 1,
+                "additional_information": 1,
                 "status.name": 1,
                 "handler.real_name": 1
             }}

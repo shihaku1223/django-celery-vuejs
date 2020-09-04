@@ -4,6 +4,7 @@
 			<search-result-item v-for="(result, index) in displayResult"
 				:result="result"
 				:key="index"
+        :keywords="keywords"
 			/>
 		</v-list>
 
@@ -27,7 +28,8 @@ export default {
   data: () => ({
 		perPageCount: 30,
 		page: 1,
-    queryResult: []
+    queryResult: [],
+    keywords: []
   }),
 
   mixins: [ SearchMixin ],
@@ -47,7 +49,10 @@ export default {
 
 	watch: {
 		query(to, from) {
-			this.search(to)
+			this.search(to, this.projects)
+		},
+		projects(to, from) {
+			this.search(this.query, to)
 		}
 	},
 
@@ -62,14 +67,32 @@ export default {
 
 	methods: {
 		async search(queryString, projects) {
+      let a =  queryString.trim().split(/\s+/)
+      const regex = RegExp(/^-/);
+      let keywords = a.filter((term) => {
+        return !regex.test(term)
+      })
+      this.keywords = keywords.map((e) => {
+        return e.replace(/\"/g, "")
+      })
+
       const response = await this.searchKeyword(queryString, projects)
+
+      this.page = 1
       this.$store.dispatch(SEARCH_RESULT, response.data.result)
 		},
 	},
+  
+  beforeUpdate() {
+  },
+
+  updated() {
+  },
+
   mounted() {
     this.$store.commit(QUERY_STRING, this.query)
 		this.search(this.query, this.projects)
-  },
+   },
 
   components: {
 		SearchResultItem

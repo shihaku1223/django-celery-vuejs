@@ -41,7 +41,10 @@
 
 <script>
 
-import { QUERY_STRING } from '../store/modules/mutation-types'
+import {
+  TARGET_PROJECTS,
+  QUERY_STRING
+} from '../store/modules/mutation-types'
 
 import SearchMixin from '../mixins/search'
 import projectTreeItem from '@/constants/projectTreeItem'
@@ -52,6 +55,9 @@ export default {
   mixins: [ SearchMixin ],
 
   data: () => ({
+    defaultItem: [
+        205,115,143,220,154,144,146,151,142,134,135,163,184,162,217,168,167,177,176,180,178,181,182,183,193,191,194,195,196,199,197,200,201,202,187,185,188,189,190,165,166,164,212,213,214,208,222,221,156,226,153,223,155,224
+    ],
     searchTextFieldStyle: {
       width: '400px'
     },
@@ -68,6 +74,7 @@ export default {
     projectString() {
       let projectNames = []
       let value = this.$store.state.search_result.targetProjects
+
       this.getSelectedProjectNames(this.items, value, projectNames)
 
       return projectNames.join()
@@ -86,6 +93,20 @@ export default {
   },
 
   methods: {
+    setDefaultValue() {
+      if(localStorage.selectedProjects &&
+         localStorage.selectedProjects != '') {
+        let a = localStorage.selectedProjects.split(',').
+          map((s) => {
+            return parseInt(s)
+          })
+        this.$store.commit(TARGET_PROJECTS, a)
+      }
+      else {
+        this.$store.commit(TARGET_PROJECTS, this.defaultItem)
+      }
+    },
+
     onOptionClick() {
       this.$router.push({
         name: 'home',
@@ -106,6 +127,12 @@ export default {
     }
   },
 
+  created() {
+    this.setDefaultValue()
+  },
+
+  mounted() {
+  }
 }
 
 </script>

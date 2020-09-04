@@ -2,6 +2,9 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 
+import TextHighlight from 'vue-text-highlight';
+Vue.component('text-highlight', TextHighlight);
+
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import { axiosConfig } from '@/config'

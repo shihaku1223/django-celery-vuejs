@@ -79,9 +79,6 @@ export default {
     searchTextFieldStyle: {
       borderRadius: "28px"
     },
-    defaultItem: [
-        205,115,143,220,154,144,146,151,142,134,135,163,184,162,217,168,167,177,176,180,178,181,182,183,193,191,194,195,196,199,197,200,201,202,187,185,188,189,190,165,166,164,212,213,214,208,222,221,156,226,153,223,155,224
-    ],
     mantisUrl: 'http://10.156.2.84/mantis/ipf3/app',
     results: [],
     treeViewStyle: {
@@ -109,20 +106,6 @@ export default {
 
   methods: {
 
-    setDefaultValue() {
-      if(localStorage.selectedProjects &&
-         localStorage.selectedProjects != '') {
-        let a = localStorage.selectedProjects.split(',').
-          map((s) => {
-            return parseInt(s)
-          })
-        this.$store.commit(TARGET_PROJECTS, a)
-      }
-      else {
-        this.$store.commit(TARGET_PROJECTS, this.defaultItem)
-      }
-    },
-
     getSelectedColumn() {
       let checkedNames = this.$store.state.target_checkbox.checkedNames
       let m = checkedNames.length
@@ -142,7 +125,6 @@ export default {
   },
 
   mounted() {
-    this.setDefaultValue()
   },
 
   components: {
