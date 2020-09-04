@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+
+  web:
+    container_name: searchapp-web
+    image: searchapp-web:latest
+    ports:
+      - "8088:8080"
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - app
+
+  app:
+    container_name: searchapp
+    image: searchapp
+    ports:
+      - "8090:8000"
+    depends_on:
+      - mongo
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - ./db/mongo:/data/db
+    ports:
+      - "27017:27017"
