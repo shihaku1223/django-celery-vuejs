@@ -47,10 +47,12 @@ export default {
 
   data:() => ({
     text: undefined,
-    summary: undefined,
-    description: undefined,
-    steps_to_reproduce: undefined,
-    additional_information: undefined,
+    targets: [
+      "summary",
+      "description",
+      "steps_to_reproduce",
+      "additional_information"
+    ]
   }),
 
   props: [ 'result', 'keywords' ],
@@ -65,47 +67,50 @@ export default {
   },
 
   methods: {
-    isIncludes(s, key) {
+    searchKeywordIndex(s, key) {
       if(typeof s !== "string") {
-        console.log('s not string')
         return undefined
       }
       let reg = RegExp(key, 'i')
       if(reg.test(s)) {
         let index = reg.exec(s).index
-        if(index - 10 >= 0)
-          return s.slice(index - 10, index + 300)
-        return s.slice(index, index + 300)
+        return index
       }
 
       return undefined
     },
+
+    findTextWithKeywords(target, keywords, highlightItemList) {
+
+      let indices = keywords.map((keyword) => {
+          return this.searchKeywordIndex(this.result[target], keyword)
+        })
+        .filter(index => index !== undefined)
+        .sort()
+
+      if(indices.length > 0) {
+        let begin = indices[0] - 10
+        let last = indices[indices.length - 1]
+
+        if(begin < 0)
+          begin = 0
+
+        highlightItemList.push({
+          "title": target,
+          "text": this.result[target].slice(begin, last + 300)
+        })
+      }
+    },
+    
     findKeywords(result, keywords) {
       
-      let textList = []
-      let summary = undefined
-      let description = undefined
-      let additional_information = undefined
-      let steps_to_reproduce = undefined
+      let highlightItemList = []
 
-      keywords.forEach((keyword) => {
-        summary = this.isIncludes(result.summary, keyword)
-        description = this.isIncludes(result.description, keyword)
-        additional_information =
-          this.isIncludes(result.additional_information, keyword)
-        steps_to_reproduce = this.isIncludes(result.steps_to_reproduce, keyword)
+      this.targets.forEach((target) => {
+        this.findTextWithKeywords(target, keywords, highlightItemList)
       })
 
-      textList.push({ "title": "summary", "text": summary })
-      textList.push({ "title": "description", "text": description })
-      textList.push({
-        "title": "additional_information",
-        "text": additional_information })
-      textList.push({
-        "title": "steps_to_reproduce",
-        "text": steps_to_reproduce})
-
-      return textList
+      return highlightItemList
     }
   },
 

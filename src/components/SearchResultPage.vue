@@ -26,8 +26,8 @@ import SearchResultItem from './SearchResultItem'
 export default {
 
   data: () => ({
-		perPageCount: 30,
-		page: 1,
+    perPageCount: 50,
+    page: 1,
     queryResult: [],
     keywords: []
   }),
