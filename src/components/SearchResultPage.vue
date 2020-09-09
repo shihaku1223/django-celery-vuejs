@@ -2,16 +2,17 @@
 	<div>
 		<v-list>
 			<search-result-item v-for="(result, index) in displayResult"
-				:result="result"
-				:key="index"
+        :result="result"
+        :key="index"
         :keywords="keywords"
-			/>
-		</v-list>
+        :targets="targets"
+      />
+    </v-list>
 
-		<v-pagination
-			v-model="page"
-			:length="pageLength">
-		</v-pagination>
+    <v-pagination
+      v-model="page"
+      :length="pageLength">
+    </v-pagination>
 </div>
 
 </template>
@@ -29,7 +30,24 @@ export default {
     perPageCount: 50,
     page: 1,
     queryResult: [],
-    keywords: []
+    keywords: [],
+    searchSources: [
+      "id",
+      "summary",
+      "project",
+      "handler.real_name",
+      "description",
+      "steps_to_reproduce",
+      "additional_information",
+      "notes.text"
+    ],
+    targets: [
+      "summary",
+      "description",
+      "steps_to_reproduce",
+      "additional_information",
+      "notes.text"
+    ]
   }),
 
   mixins: [ SearchMixin ],
@@ -48,13 +66,13 @@ export default {
 	},
 
 	watch: {
-		query(to, from) {
-			this.search(to, this.projects)
-		},
-		projects(to, from) {
-			this.search(this.query, to)
-		}
-	},
+    query(to, from) {
+      this.search(to, this.projects, this.searchSources)
+    },
+    projects(to, from) {
+      this.search(this.query, to, this.searchSources)
+    }
+  },
 
   props: {
     query: {
@@ -66,7 +84,7 @@ export default {
   },
 
 	methods: {
-		async search(queryString, projects) {
+    async search(queryString, projects, targets) {
       let a =  queryString.trim().split(/\s+/)
       const regex = RegExp(/^-/);
       let keywords = a.filter((term) => {
@@ -76,7 +94,8 @@ export default {
         return e.replace(/\"/g, "")
       })
 
-      const response = await this.searchKeyword(queryString, projects)
+      const response = await this.searchKeyword(
+        queryString, projects, targets.join(','))
 
       this.page = 1
       this.$store.dispatch(SEARCH_RESULT, response.data.result)
@@ -91,7 +110,7 @@ export default {
 
   mounted() {
     this.$store.commit(QUERY_STRING, this.query)
-		this.search(this.query, this.projects)
+    this.search(this.query, this.projects, this.searchSources)
    },
 
   components: {

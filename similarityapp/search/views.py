@@ -26,7 +26,7 @@ class ESSearch:
     scroll_id = None
     scroll_size = None
 
-    def generateQuery(self, keywords, targetProjects):
+    def generateQuery(self, keywords, targetProjects, targets=[]):
 
         notPattern = re.compile("^-(.*)")
 
@@ -41,6 +41,17 @@ class ESSearch:
                 must_keywords.append(term)
 
         query = {
+            "_source": targets,
+            #"_source": [
+            #    "id",
+            #    "project.name",
+            #    "status.name",
+            #    "summary",
+            #    "description",
+            #    "handler.real_name",
+            #    "steps_to_reproduce",
+            #    "additional_information"
+            #],
             "query": {
                 "bool": {
                     "must": [],
@@ -90,9 +101,12 @@ class ESSearch:
 
     def search(self, index,
                keywords,
-               targetProjects, size=50, scroll="1m"):
+               targetProjects,
+               targetSources, size=50, scroll="1m"):
 
-        query = self.generateQuery(keywords, targetProjects)
+        query = self.generateQuery(keywords,
+                    targetProjects,
+                    targetSources)
 
         print(json.dumps(query))
 
@@ -153,9 +167,13 @@ class ESSearchView(GenericAPIView):
         q = QueryDict(request.GET.urlencode())
         keywords = q['q'].split()
         targetProjects = q['p'].split(',')
+        try:
+            targetSources = q['s'].split(',')
+        except:
+            targetSources = []
 
         scroll_id, scroll_size, total, r = self.ess.search("test-issues",
-            keywords, targetProjects)
+            keywords, targetProjects, targetSources)
 
         content = {}
         if r is not None:

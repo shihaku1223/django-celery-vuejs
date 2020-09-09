@@ -47,15 +47,9 @@ export default {
 
   data:() => ({
     text: undefined,
-    targets: [
-      "summary",
-      "description",
-      "steps_to_reproduce",
-      "additional_information"
-    ]
   }),
 
-  props: [ 'result', 'keywords' ],
+  props: [ 'result', 'keywords', 'targets' ],
 
   created() {
   },
@@ -80,13 +74,45 @@ export default {
       return undefined
     },
 
+    getPropertyByPath(obj, path) {
+      path = path.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+      path = path.replace(/^\./, '');           // strip a leading dot
+      let a = path.split('.');
+
+      let text = ""
+
+      for(let i = 0; i < a.length; i++) {
+        let key = a[i]
+        if(Array.isArray(obj)) {
+          obj.forEach((e) => {
+            if(key in e) {
+              obj = e[key]
+              text += obj
+            }
+          })
+        }
+
+        else if(key in obj) {
+          obj = obj[key]
+        } else {
+          return
+        }
+      }
+      if(text != "")
+        return text
+      return obj
+    },
+
     findTextWithKeywords(target, keywords, highlightItemList) {
+      let text = this.getPropertyByPath(this.result, target)
 
       let indices = keywords.map((keyword) => {
-          return this.searchKeywordIndex(this.result[target], keyword)
+          return this.searchKeywordIndex(text, keyword)
         })
         .filter(index => index !== undefined)
-        .sort()
+        .sort((x, y) => {
+          return x - y
+        })
 
       if(indices.length > 0) {
         let begin = indices[0] - 10
@@ -97,9 +123,16 @@ export default {
 
         highlightItemList.push({
           "title": target,
-          "text": this.result[target].slice(begin, last + 300)
+          "text": text.slice(begin, last + 300)
         })
       }
+    },
+
+    traversalObject(obj) {
+      Object.keys(obj).forEach((key) => {
+        console.log(key)
+        this.traversalObject(obj[key])
+      })
     },
     
     findKeywords(result, keywords) {

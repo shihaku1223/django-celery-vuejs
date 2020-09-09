@@ -5,6 +5,7 @@ es = Elasticsearch("searchappbackend:9200")
 import json
 
 query = {
+    "_source": [],
     "query": {
         "bool": {
             "must": [],
