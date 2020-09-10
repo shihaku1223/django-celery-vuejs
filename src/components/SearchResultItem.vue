@@ -19,7 +19,7 @@
         <v-card
           outlined
         >
-          {{ result.project.name + '/' +  result.handler.real_name }}
+          {{ result.project.name + '/' +  userName }}
         </v-card>
       </v-col>
     </v-row>
@@ -55,6 +55,17 @@ export default {
   },
 
   computed: {
+    userName() {
+      if(this.result.reporter.real_name == null &&
+        this.result.handler.real_name == null)
+        return '未指定'
+
+      if(this.result.reporter.real_name == null)
+        return this.result.handler.real_name
+
+      return this.result.reporter.real_name
+    },
+
     highlightTexts() {
       return this.findKeywords(this.result, this.keywords)
     }

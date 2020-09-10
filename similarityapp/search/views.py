@@ -42,16 +42,6 @@ class ESSearch:
 
         query = {
             "_source": targets,
-            #"_source": [
-            #    "id",
-            #    "project.name",
-            #    "status.name",
-            #    "summary",
-            #    "description",
-            #    "handler.real_name",
-            #    "steps_to_reproduce",
-            #    "additional_information"
-            #],
             "query": {
                 "bool": {
                     "must": [],
@@ -132,10 +122,11 @@ class ESSearch:
                 list(map(self.toSource, res['hits']['hits']))
             )
 
-        return (None, None, None, None)
+        return (None, None, 0, None)
 
     def scroll(self, scroll_id, scroll="1m"):
         res = self.es.scroll(scroll_id=scroll_id, scroll=scroll)
+
         scroll_id = res["_scroll_id"]
         scroll_size = len(res['hits']['hits'])
 
@@ -176,11 +167,10 @@ class ESSearchView(GenericAPIView):
             keywords, targetProjects, targetSources)
 
         content = {}
-        if r is not None:
-            content["scroll_id"] = scroll_id
-            content["scroll_size"] = scroll_size
-            content["total"] = total
-            content["result"] = r
+        content["scroll_id"] = scroll_id
+        content["scroll_size"] = scroll_size
+        content["total"] = total
+        content["result"] = r
 
         return Response(content, status=status.HTTP_200_OK)
 
@@ -202,10 +192,14 @@ class ESScrollView(RetrieveAPIView):
         except elasticsearch.exceptions.NotFoundError as e:
             print(e.info)
             error = e.info["error"]["root_cause"][0]["reason"]
+        except Exception as e:
+            error = e.info["error"]["root_cause"][0]["reason"]
 
         content = {}
+        response_status = status.HTTP_200_OK
         if error is not None:
             content["error"] = error
+            response_status = status.HTTP_500_INTERNAL_SERVER_ERROR
         elif r is not None:
             print(scroll_size)
             print(scroll_id)
@@ -219,7 +213,7 @@ class ESScrollView(RetrieveAPIView):
             except Exception as e:
                 pass
 
-        return Response(content, status=status.HTTP_200_OK)
+        return Response(content, status=response_status)
 
 class SearchView(GenericAPIView):
 

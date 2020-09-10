@@ -1,21 +1,70 @@
 <template>
 	<div>
-		<v-list>
-			<search-result-item v-for="(result, index) in displayResult"
-        :result="result"
-        :key="index"
-        :keywords="keywords"
-        :targets="targets"
-      />
-    </v-list>
+    <div class=message v-if="searchResultMessage">
+      {{ searchResultMessage }}
+    </div>
+    <!--
+    <button class="hk-button-sm--primary"
+      @click="onClick">test
+    </button>
+    -->
 
-    <v-pagination
-      v-model="page"
-      :length="pageLength">
-    </v-pagination>
+    <DynamicScroller
+      ref="scroller"
+      class="scroller"
+      :items="fetchedResult"
+      :min-item-size="54"
+      key-field="_id"
+    >
+      <template v-slot="{ item, index, active }">
+
+        <DynamicScrollerItem
+          :item="item"
+          :active="active"
+          :data-index="index"
+          :title="`title${index}${active}`"
+          key-field="_id"
+        >
+          <!--
+          <div
+            class="message"
+            :style="{
+              height: `30px`,
+            }"
+          >
+            {{ item.id }}
+          </div>
+
+          -->
+
+          <search-result-item
+            :result="item"
+            :key="index"
+            :keywords="keywords"
+            :targets="targets"
+          />
+
+        </DynamicScrollerItem>
+      </template>
+    </DynamicScroller>  
 </div>
 
 </template>
+
+<style scoped>
+.scroller {
+  height: 100%;
+}
+
+.message {
+  padding: 10px 10px 9px;
+  border-bottom: solid 1px #eee;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+</style>
 
 <script>
 
@@ -28,13 +77,17 @@ export default {
 
   data: () => ({
     perPageCount: 50,
-    page: 1,
     queryResult: [],
     keywords: [],
+    fetchedResult: [],
+    hitCount: undefined,
+    scrollId: undefined,
+    fetching: false,
     searchSources: [
       "id",
       "summary",
       "project",
+      "reporter.real_name",
       "handler.real_name",
       "description",
       "steps_to_reproduce",
@@ -53,13 +106,20 @@ export default {
   mixins: [ SearchMixin ],
 
 	computed: {
-		pageLength() {
-			return Math.ceil(this.searchResult.length/this.perPageCount)
-		},
-		displayResult() {
-			let begin = this.perPageCount * (this.page - 1)
-			return this.searchResult.slice(begin, begin + this.perPageCount)
-		},
+
+    pageLength() {
+      return Math.ceil(this.searchResult.length/this.perPageCount)
+    },
+
+    searchResultMessage() {
+      if(this.hitCount == 0)
+        return `${this.query} に一致する情報は見つかりませんでした。`
+      return `約${this.hitCount}件`
+    },
+
+    displayResult() {
+      return this.fetchedResult
+    },
 		searchResult() {
 			return this.$store.state.search_result.searchResult
 		}
@@ -94,18 +154,90 @@ export default {
         return e.replace(/\"/g, "")
       })
 
+      this.fetching = true
       const response = await this.searchKeyword(
         queryString, projects, targets.join(','))
+      this.fetching = false
 
-      this.page = 1
+      this.hitCount = response.data.total
+      this.scrollId = response.data.scroll_id
+
       this.$store.dispatch(SEARCH_RESULT, response.data.result)
+      this.appendResult()
 		},
+
+    scrollToBottom () {
+      this.$refs.scroller.scrollToBottom()
+    },
+
+    async scrollNextResult() {
+      if(this.scrollId === undefined)
+        return
+      if(this.fetching)
+        return
+
+      this.fetching = true
+      try {
+        let r = await this.scroll(this.scrollId)
+        this.scrollId = r.data.scroll_id
+        this.$store.dispatch(SEARCH_RESULT, r.data.result)
+        this.appendResult()
+      } catch(e) {
+        console.log('scroll error', e)
+      }
+
+      this.fetching = false
+    },
+
+    onClick() {
+      this.scrollNextResult()
+    },
+
+    appendResult() {
+      if(this.searchResult === undefined)
+        return
+
+      if(this.searchResult === null)
+        return
+
+      if(this.searchResult.length == 0)
+        return
+
+      this.searchResult.forEach((result) => {
+        this.fetchedResult.push({
+          _id: this.fetchedResult.length + 1,
+          ...result
+        })
+      })
+
+      console.log(this.fetchedResult.length)
+      this.scrollToBottom()
+    },
+
+    handleScroll(ev) {
+      let scrollBottomY = document.documentElement.scrollHeight -
+        document.documentElement.clientHeight
+
+      let diff = scrollBottomY - window.scrollY
+      if(diff < scrollBottomY / 5) {
+        console.log('fetching')
+        this.scrollNextResult()
+      }
+    }
 	},
   
   beforeUpdate() {
   },
 
   updated() {
+  },
+
+  created() {
+    window.addEventListener('scroll', this.handleScroll);
+  },
+
+  destroyed() {
+    window.removeEventListener('scroll', this.handleScroll);
   },
 
   mounted() {

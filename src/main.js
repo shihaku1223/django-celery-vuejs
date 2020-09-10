@@ -5,6 +5,11 @@ import Vue from 'vue'
 import TextHighlight from 'vue-text-highlight';
 Vue.component('text-highlight', TextHighlight);
 
+import VueVirtualScroller from 'vue-virtual-scroller'
+Vue.use(VueVirtualScroller)
+
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import { axiosConfig } from '@/config'
