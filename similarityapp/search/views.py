@@ -163,7 +163,7 @@ class ESSearchView(GenericAPIView):
         except:
             targetSources = []
 
-        scroll_id, scroll_size, total, r = self.ess.search("test-issues",
+        scroll_id, scroll_size, total, r = self.ess.search("issues",
             keywords, targetProjects, targetSources)
 
         content = {}

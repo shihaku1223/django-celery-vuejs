@@ -10,7 +10,7 @@ es = Elasticsearch("localhost:9200")
 def insert_ticket_and_update(objs):
     for obj in objs:
         try:
-            res = es.index(index="test-issues", id=obj['id'], body=obj)
+            res = es.index(index="issues", id=obj['id'], body=obj)
         except Exception as e:
             raise e
 
