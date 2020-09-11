@@ -1,6 +1,6 @@
 <template>
 	<div>
-    <div class=message v-if="searchResultMessage">
+    <div class=message v-if="fetchedResult.length != 0">
       {{ searchResultMessage }}
     </div>
     <!--
@@ -46,6 +46,15 @@
 
         </DynamicScrollerItem>
       </template>
+      <template #after>
+        <div class="loading-circular"
+          v-if="isFetching"
+          >
+          <v-progress-circular
+            indeterminate
+          ></v-progress-circular> 
+        </div>
+      </template>
     </DynamicScroller>  
 </div>
 
@@ -59,6 +68,13 @@
 .message {
   padding: 10px 10px 9px;
   border-bottom: solid 1px #eee;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+
+.loading-circular {
+  padding: 10px 10px 9px;
   justify-content: center;
   display: flex;
   align-items: center;
@@ -120,12 +136,15 @@ export default {
     displayResult() {
       return this.fetchedResult
     },
-		searchResult() {
-			return this.$store.state.search_result.searchResult
-		}
+    searchResult() {
+      return this.$store.state.search_result.searchResult
+    },
+    isFetching() {
+      return this.fetching
+    }
 	},
 
-	watch: {
+  watch: {
     query(to, from) {
       this.search(to, this.projects, this.searchSources)
     },
@@ -164,7 +183,7 @@ export default {
 
       this.$store.dispatch(SEARCH_RESULT, response.data.result)
       this.appendResult()
-		},
+    },
 
     scrollToBottom () {
       this.$refs.scroller.scrollToBottom()
@@ -210,7 +229,6 @@ export default {
         })
       })
 
-      console.log(this.fetchedResult.length)
       this.scrollToBottom()
     },
 
@@ -219,12 +237,13 @@ export default {
         document.documentElement.clientHeight
 
       let diff = scrollBottomY - window.scrollY
+      //let circular = this.$el.querySelector('.loading-circular')
       if(diff < scrollBottomY / 5) {
         console.log('fetching')
         this.scrollNextResult()
       }
     }
-	},
+  },
   
   beforeUpdate() {
   },
@@ -247,6 +266,6 @@ export default {
 
   components: {
 		SearchResultItem
-	}
+  }
 }
 </script>

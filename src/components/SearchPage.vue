@@ -72,6 +72,7 @@ import {
 } from '../store/modules/mutation-types'
 
 import projectTreeItem from '@/constants/projectTreeItem'
+import mantisUrl from '@/constants/mantisUrl'
 
 export default {
 
@@ -79,7 +80,6 @@ export default {
     searchTextFieldStyle: {
       borderRadius: "28px"
     },
-    mantisUrl: 'http://10.156.2.84/mantis/ipf3/app',
     results: [],
     treeViewStyle: {
       overflowY: 'auto',
@@ -89,6 +89,9 @@ export default {
   }),
 
   computed: {
+    mantisUrl() {
+      return mantisUrl
+    },
     selectedProject: {
       set(value) {
         console.log(value)

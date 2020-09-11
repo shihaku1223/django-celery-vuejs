@@ -9,7 +9,11 @@
         <v-card
           outlined
         >
-         {{ result.id }}
+          <a target="_blank" rel="noopener noreferrer"
+            :href="mantisTicketUrl"
+            >
+            {{ result.id }}
+          </a>
         </v-card>
       </v-col>
 
@@ -42,19 +46,20 @@
 <script>
 
 import HighlightText from '@/components/HighlightText'
+import mantisUrl from '@/constants/mantisUrl'
 
 export default {
 
   data:() => ({
-    text: undefined,
   }),
 
   props: [ 'result', 'keywords', 'targets' ],
 
-  created() {
-  },
-
   computed: {
+    mantisTicketUrl() {
+      return `${mantisUrl}/view.php?id=${this.result.id}`
+    },
+
     userName() {
       if(this.result.reporter.real_name == null &&
         this.result.handler.real_name == null)
