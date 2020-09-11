@@ -9,7 +9,11 @@
         <v-card
           outlined
         >
-         {{ result.id }}
+          <a target="_blank" rel="noopener noreferrer"
+            :href="mantisTicketUrl"
+            >
+            {{ result.id }}
+          </a>
         </v-card>
       </v-col>
 
@@ -19,7 +23,7 @@
         <v-card
           outlined
         >
-          {{ result.project.name + '/' +  result.handler.real_name }}
+          {{ result.project.name + '/' +  userName }}
         </v-card>
       </v-col>
     </v-row>
@@ -42,70 +46,120 @@
 <script>
 
 import HighlightText from '@/components/HighlightText'
+import mantisUrl from '@/constants/mantisUrl'
 
 export default {
 
   data:() => ({
-    text: undefined,
-    summary: undefined,
-    description: undefined,
-    steps_to_reproduce: undefined,
-    additional_information: undefined,
   }),
 
-  props: [ 'result', 'keywords' ],
-
-  created() {
-  },
+  props: [ 'result', 'keywords', 'targets' ],
 
   computed: {
+    mantisTicketUrl() {
+      return `${mantisUrl}/view.php?id=${this.result.id}`
+    },
+
+    userName() {
+      if(this.result.reporter.real_name == null &&
+        this.result.handler.real_name == null)
+        return '未指定'
+
+      if(this.result.reporter.real_name == null)
+        return this.result.handler.real_name
+
+      return this.result.reporter.real_name
+    },
+
     highlightTexts() {
       return this.findKeywords(this.result, this.keywords)
     }
   },
 
   methods: {
-    isIncludes(s, key) {
+    searchKeywordIndex(s, key) {
       if(typeof s !== "string") {
-        console.log('s not string')
         return undefined
       }
       let reg = RegExp(key, 'i')
       if(reg.test(s)) {
         let index = reg.exec(s).index
-        if(index - 10 >= 0)
-          return s.slice(index - 10, index + 300)
-        return s.slice(index, index + 300)
+        return index
       }
 
       return undefined
     },
+
+    getPropertyByPath(obj, path) {
+      path = path.replace(/\[(\w+)\]/g, '.$1'); // convert indexes to properties
+      path = path.replace(/^\./, '');           // strip a leading dot
+      let a = path.split('.');
+
+      let text = ""
+
+      for(let i = 0; i < a.length; i++) {
+        let key = a[i]
+        if(Array.isArray(obj)) {
+          obj.forEach((e) => {
+            if(key in e) {
+              obj = e[key]
+              text += obj
+            }
+          })
+        }
+
+        else if(key in obj) {
+          obj = obj[key]
+        } else {
+          return
+        }
+      }
+      if(text != "")
+        return text
+      return obj
+    },
+
+    findTextWithKeywords(target, keywords, highlightItemList) {
+      let text = this.getPropertyByPath(this.result, target)
+
+      let indices = keywords.map((keyword) => {
+          return this.searchKeywordIndex(text, keyword)
+        })
+        .filter(index => index !== undefined)
+        .sort((x, y) => {
+          return x - y
+        })
+
+      if(indices.length > 0) {
+        let begin = indices[0] - 10
+        let last = indices[indices.length - 1]
+
+        if(begin < 0)
+          begin = 0
+
+        highlightItemList.push({
+          "title": target,
+          "text": text.slice(begin, last + 300)
+        })
+      }
+    },
+
+    traversalObject(obj) {
+      Object.keys(obj).forEach((key) => {
+        console.log(key)
+        this.traversalObject(obj[key])
+      })
+    },
+    
     findKeywords(result, keywords) {
       
-      let textList = []
-      let summary = undefined
-      let description = undefined
-      let additional_information = undefined
-      let steps_to_reproduce = undefined
+      let highlightItemList = []
 
-      keywords.forEach((keyword) => {
-        summary = this.isIncludes(result.summary, keyword)
-        description = this.isIncludes(result.description, keyword)
-        additional_information =
-          this.isIncludes(result.additional_information, keyword)
-        steps_to_reproduce = this.isIncludes(result.steps_to_reproduce, keyword)
+      this.targets.forEach((target) => {
+        this.findTextWithKeywords(target, keywords, highlightItemList)
       })
 
-      textList.push({ "title": "summary", "text": summary })
-      textList.push({ "title": "description", "text": description })
-      textList.push({
-        "title": "additional_information",
-        "text": additional_information })
-      textList.push({
-        "title": "steps_to_reproduce",
-        "text": steps_to_reproduce})
-
-      return textList
+      return highlightItemList
     }
   },
 

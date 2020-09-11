@@ -1,7 +1,11 @@
 export default {
   methods: {
-    searchKeyword(query, projects) {
-      return this.axios.get(`/search/?q=${query}&p=${projects}`)
+    searchKeyword(query, projects, targets) {
+      return this.axios.get(`/search/?q=${query}&p=${projects}&s=${targets}`)
+    },
+
+    scroll(scroll_id) {
+      return this.axios.get(`/search/${scroll_id}`)
     },
 
     getSelectedProjectNames(itemList, selectedItems, projectNames) {
