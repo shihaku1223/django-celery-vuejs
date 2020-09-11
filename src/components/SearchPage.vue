@@ -41,12 +41,14 @@
           <label-combobox
             title="ステータス"
             :items="statusItems"
+            :default="statusDefault"
             v-model="selectedStatus"
             />
 
           <label-combobox
             title="解決状況"
             :items="resolutionItems"
+            :default="resolutionDefault"
             v-model="selectedResolution"
             />
 
@@ -110,7 +112,7 @@ export default {
       width: '100%',
       height: '100%'
     },
-    selectedStatus: undefined,
+    selectedStatus: "新規",
     statusItems: [
       "全て",
       "新規",
@@ -150,6 +152,18 @@ export default {
   },
 
   computed: {
+    statusDefault() {
+      if(this.$store.state.search_result.searchOptions == undefined)
+        return "全て"
+        
+      return this.$store.state.search_result.searchOptions.status
+    },
+    resolutionDefault() {
+      if(this.$store.state.search_result.searchOptions == undefined)
+        return "全て"
+        
+      return this.$store.state.search_result.searchOptions.resolution
+    },
     mantisUrl() {
       return mantisUrl
     },
@@ -174,6 +188,7 @@ export default {
         status: this.selectedStatus,
         resolution: this.selectedResolution,
       }
+      console.log(options)
       this.$store.dispatch(UPDATE_SEARCH_OPTIONS, options)
     }
   },

@@ -1,6 +1,6 @@
 <template>
 	<div>
-    <div class=message v-if="fetchedResult.length != 0">
+    <div class=message v-if="hitCount != undefined">
       {{ searchResultMessage }}
     </div>
     <!--

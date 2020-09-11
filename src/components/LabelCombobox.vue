@@ -36,7 +36,7 @@ export default {
     select: undefined
   }),
 
-  props: [ 'title', 'items'],
+  props: [ 'title', 'items', 'default'],
 
   methods: {
     update() {
@@ -45,7 +45,7 @@ export default {
   },
 
   created() {
-    this.select = this.items[0]
+    this.select = this.items.filter(i => i == this.default)[0]
     this.$emit('input', this.select)
   },
 
