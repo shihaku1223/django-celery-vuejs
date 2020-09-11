@@ -91,7 +91,8 @@ import CheckboxLabel from '@/components/CheckboxLabel'
 import LabelCombobox from '@/components/LabelCombobox'
 
 import {
-	TARGET_PROJECTS
+  TARGET_PROJECTS,
+  UPDATE_SEARCH_OPTIONS,
 } from '../store/modules/mutation-types'
 
 import projectTreeItem from '@/constants/projectTreeItem'
@@ -141,10 +142,10 @@ export default {
 
   watch: {
     selectedStatus(to) {
-      console.log(to)
+      this.updateOptions()
     },
     selectedResolution(to) {
-      console.log(to)
+      this.updateOptions()
     }
   },
 
@@ -168,7 +169,13 @@ export default {
   },
 
   methods: {
-
+    updateOptions() {
+      let options = {
+        status: this.selectedStatus,
+        resolution: this.selectedResolution,
+      }
+      this.$store.dispatch(UPDATE_SEARCH_OPTIONS, options)
+    }
   },
 
   mounted() {

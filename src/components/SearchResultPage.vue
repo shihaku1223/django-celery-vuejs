@@ -85,7 +85,11 @@
 <script>
 
 import SearchMixin from '../mixins/search'
-import { SEARCH_RESULT, QUERY_STRING } from '../store/modules/mutation-types'
+import {
+  SEARCH_RESULT,
+  QUERY_STRING,
+  UPDATE_SEARCH_OPTIONS,
+} from '../store/modules/mutation-types'
 
 import SearchResultItem from './SearchResultItem'
 
@@ -103,8 +107,8 @@ export default {
       "id",
       "summary",
       "project",
-      "reporter.real_name",
-      "handler.real_name",
+      "reporter",
+      "handler",
       "description",
       "steps_to_reproduce",
       "additional_information",
@@ -122,6 +126,10 @@ export default {
   mixins: [ SearchMixin ],
 
 	computed: {
+
+    searchOptions() {
+      return this.$store.state.search_result.searchOptions
+    },
 
     pageLength() {
       return Math.ceil(this.searchResult.length/this.perPageCount)
@@ -150,7 +158,7 @@ export default {
     },
     projects(to, from) {
       this.search(this.query, to, this.searchSources)
-    }
+    },
   },
 
   props: {
@@ -159,11 +167,24 @@ export default {
     },
     projects: {
       type: String
-    }
+    },
   },
 
 	methods: {
+    updateOptions({status, resolution}) {
+      let options = {
+        status: status,
+        resolution: resolution
+      }
+      this.$store.dispatch(UPDATE_SEARCH_OPTIONS, options)
+    },
+
     async search(queryString, projects, targets) {
+      if(queryString === undefined)
+        return
+
+      this.updateOptions(this.$route.query)
+
       let a =  queryString.trim().split(/\s+/)
       const regex = RegExp(/^-/);
       let keywords = a.filter((term) => {
@@ -175,7 +196,10 @@ export default {
 
       this.fetching = true
       const response = await this.searchKeyword(
-        queryString, projects, targets.join(','))
+        queryString,
+        projects,
+        targets.join(','),
+        this.searchOptions)
       this.fetching = false
 
       this.hitCount = response.data.total

@@ -61,14 +61,21 @@ export default {
     },
 
     userName() {
-      if(this.result.reporter.real_name == null &&
-        this.result.handler.real_name == null)
-        return '未指定'
 
-      if(this.result.reporter.real_name == null)
+      if(this.result.reporter != null) {
+        if(this.result.reporter.real_name == null) {
+          return this.result.reporter.name
+        }
+        return this.result.reporter.real_name
+      }
+
+      if(this.result.handler != null) {
+        if(this.result.handler.real_name == null)
+          return this.result.handler.name
         return this.result.handler.real_name
+      }
 
-      return this.result.reporter.real_name
+      return '未指定'
     },
 
     highlightTexts() {

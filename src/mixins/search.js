@@ -1,7 +1,12 @@
 export default {
   methods: {
-    searchKeyword(query, projects, targets) {
-      return this.axios.get(`/search/?q=${query}&p=${projects}&s=${targets}`)
+    searchKeyword(query, projects, targets, options) {
+      if(projects === undefined)
+        projects = ""
+
+      return this.axios.post(
+          `/search/?q=${query}&p=${projects}&s=${targets}`,
+          options)
     },
 
     scroll(scroll_id) {
