@@ -46,7 +46,7 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Tokyo'
 
-ELASTICSEARCH_URL = 'searchappbackend:9200'
+ELASTICSEARCH_URL = 'es:9200'
 
 # Application definition
 
