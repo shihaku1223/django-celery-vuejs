@@ -24,9 +24,9 @@
           style="min-width: 300px"
         >
 
-        <text-label
-          style="width: 200px"
-          text='Target Project' />
+          <text-label
+            style="width: 200px"
+            text='Target Project' />
           <v-treeview
             v-model="selectedProject"
             :style="treeViewStyle"
@@ -34,6 +34,24 @@
             selected-color="red"
             :items="items"
           />
+        </div>
+
+        <div class="ma2 flex-col right-options">
+
+          <label-combobox
+            title="ステータス"
+            :items="statusItems"
+            :default="statusDefault"
+            v-model="selectedStatus"
+            />
+
+          <label-combobox
+            title="解決状況"
+            :items="resolutionItems"
+            :default="resolutionDefault"
+            v-model="selectedResolution"
+            />
+
         </div>
       </div>
       <div class="dark-gray f4 normal mt0 mb4 pv4 bb b--silver" />
@@ -55,6 +73,11 @@
   width: 100%;
 }
 
+.right-options {
+  align-items: flex-start;
+  flex-grow: 2;
+}
+
 </style>
 
 <script>
@@ -67,8 +90,11 @@ import ScoreTableRow from '@/components/ScoreTableRow'
 import SelectMenu from '@/components/SelectMenu'
 import CheckboxLabel from '@/components/CheckboxLabel'
 
+import LabelCombobox from '@/components/LabelCombobox'
+
 import {
-	TARGET_PROJECTS
+  TARGET_PROJECTS,
+  UPDATE_SEARCH_OPTIONS,
 } from '../store/modules/mutation-types'
 
 import projectTreeItem from '@/constants/projectTreeItem'
@@ -86,9 +112,58 @@ export default {
       width: '100%',
       height: '100%'
     },
+    selectedStatus: "新規",
+    statusItems: [
+      "全て",
+      "新規",
+      "内容確認済",
+      "担当者決定",
+      "要追加情報",
+      "調査中",
+      "修正中",
+      "要方向付け",
+      "修正済",
+      "解決済",
+      "完了",
+    ],
+    selectedResolution: undefined,
+    resolutionItems: [
+      "全て",
+      "対処中",
+      "実装済",
+      "差戻し",
+      "再現不可",
+      "二重登録",
+      "変更不要",
+      "原因の重複",
+      "誤登録",
+      "次版で対応",
+      "次製品で対応",
+    ],
   }),
 
+  watch: {
+    selectedStatus(to) {
+      this.updateOptions()
+    },
+    selectedResolution(to) {
+      this.updateOptions()
+    }
+  },
+
   computed: {
+    statusDefault() {
+      if(this.$store.state.search_result.searchOptions == undefined)
+        return "全て"
+        
+      return this.$store.state.search_result.searchOptions.status
+    },
+    resolutionDefault() {
+      if(this.$store.state.search_result.searchOptions == undefined)
+        return "全て"
+        
+      return this.$store.state.search_result.searchOptions.resolution
+    },
     mantisUrl() {
       return mantisUrl
     },
@@ -108,23 +183,14 @@ export default {
   },
 
   methods: {
-
-    getSelectedColumn() {
-      let checkedNames = this.$store.state.target_checkbox.checkedNames
-      let m = checkedNames.length
-      let column = []
-      if(m == 1)
-        return checkedNames[0]
-
-      if(checkedNames.includes('summary'))
-        column.push('s')
-      if(checkedNames.includes('description'))
-        column.push('d')
-      if(checkedNames.includes('steps_to_reproduce'))
-        column.push('s')
-
-      return column.join("_")
-    },
+    updateOptions() {
+      let options = {
+        status: this.selectedStatus,
+        resolution: this.selectedResolution,
+      }
+      console.log(options)
+      this.$store.dispatch(UPDATE_SEARCH_OPTIONS, options)
+    }
   },
 
   mounted() {
@@ -138,6 +204,7 @@ export default {
     ScoreTableRow,
     SelectMenu,
     CheckboxLabel,
+    LabelCombobox,
   }
 }
 </script>

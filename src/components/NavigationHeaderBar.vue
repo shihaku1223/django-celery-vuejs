@@ -71,6 +71,11 @@ export default {
         return this.$store.state.search_result.queryString
       }
     },
+
+    searchOptions() {
+      return this.$store.state.search_result.searchOptions
+    },
+
     projectString() {
       let projectNames = []
       let value = this.$store.state.search_result.targetProjects
@@ -116,12 +121,14 @@ export default {
     async onEnter() {
       console.log(this.queryString)
       console.log(this.projectString)
+      console.log(this.searchOptions)
 
       this.$router.push({
         name: 'search',
         query: {
           q: this.queryString,
-          p: this.projectString
+          p: this.projectString,
+          ...this.searchOptions
         }
       }).catch(() => {})
     }

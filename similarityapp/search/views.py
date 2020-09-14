@@ -26,7 +26,7 @@ class ESSearch:
     scroll_id = None
     scroll_size = None
 
-    def generateQuery(self, keywords, targetProjects, targets=[]):
+    def generateQuery(self, keywords, targetProjects, targets=[], options={}):
 
         notPattern = re.compile("^-(.*)")
 
@@ -56,8 +56,24 @@ class ESSearch:
         mustNotQuery = query["query"]["bool"]["must_not"]
         self.appendQueryStringKeywords(must_not_keywords, mustNotQuery)
 
+
         # filter projects
-        filterQuery = self.generateShouldProjectsQuery(targetProjects)
+        projectQuery = self.generateShouldProjectsQuery(targetProjects)
+
+        filterQuery = {
+            "bool": { "must":[] }
+        }
+        f = filterQuery["bool"]["must"]
+        f.append(projectQuery)
+
+        for k, v in options.items():
+
+            if v == "全て":
+                continue
+
+            d = { "term": { k + '.name': v } }
+            f.append(d)
+
         query["query"]["bool"]["filter"] = filterQuery
 
         return query
@@ -92,11 +108,12 @@ class ESSearch:
     def search(self, index,
                keywords,
                targetProjects,
-               targetSources, size=50, scroll="1m"):
+               targetSources, options, size=50, scroll="1m"):
 
         query = self.generateQuery(keywords,
                     targetProjects,
-                    targetSources)
+                    targetSources,
+                    options)
 
         print(json.dumps(query))
 
@@ -152,19 +169,32 @@ class ESSearchView(GenericAPIView):
 
     ess = ESSearch()
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         print(request.GET.urlencode())
 
         q = QueryDict(request.GET.urlencode())
         keywords = q['q'].split()
-        targetProjects = q['p'].split(',')
+
+        if q['p'] == '':
+            targetProjects=[]
+        else:
+            targetProjects = q['p'].split(',')
+
         try:
             targetSources = q['s'].split(',')
         except:
             targetSources = []
 
-        scroll_id, scroll_size, total, r = self.ess.search("issues",
-            keywords, targetProjects, targetSources)
+        print('data')
+        for k, v in request.data.items():
+            print("key", k, "val", v)
+
+        scroll_id, scroll_size, total, r = self.ess.search(
+            "issues",
+            keywords,
+            targetProjects,
+            targetSources,
+            request.data)
 
         content = {}
         content["scroll_id"] = scroll_id
