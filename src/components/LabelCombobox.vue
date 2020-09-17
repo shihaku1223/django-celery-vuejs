@@ -7,8 +7,8 @@
       <v-combobox
         ref="input"
         :items="items"
-        v-model="select"
-        @input="update"
+        v-model="internalSelect"
+        multiple
         outlined
         dense
       />
@@ -20,7 +20,7 @@
 <style scoped>
 
 .combobox {
-  width: 200px;
+  width: auto;
 }
 
 </style>
@@ -32,21 +32,29 @@ import TextLabel from '@/components/TextLabel'
 
 export default {
 
-  data: () => ({
-    select: undefined
-  }),
 
-  props: [ 'title', 'items', 'default'],
+  props: [ 'title', 'items', 'value'],
+
+  computed: {
+    internalSelect: {
+      get() {
+        return this.value
+      },
+      set(to) {
+        this.$emit('input', to)
+      },
+    },
+  },
 
   methods: {
     update() {
-      this.$emit('input', this.select)
     }
   },
 
   created() {
-    this.select = this.items.filter(i => i == this.default)[0]
-    this.$emit('input', this.select)
+  },
+
+  mounted() {
   },
 
   components: {

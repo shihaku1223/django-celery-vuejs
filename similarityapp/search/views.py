@@ -66,17 +66,58 @@ class ESSearch:
         f = filterQuery["bool"]["must"]
         f.append(projectQuery)
 
+        if "status" in options:
+            statusQuery = self.generateOptionQuery("status", options)
+
+            if statusQuery is not None:
+                f.append(statusQuery)
+
+        if "resolution" in options:
+            resolutionQuery = self.generateOptionQuery("resolution", options)
+
+            if resolutionQuery is not None:
+                f.append(resolutionQuery)
+
         for k, v in options.items():
 
-            if v == "全て":
-                continue
-
-            d = { "term": { k + '.name': v } }
-            f.append(d)
+            items = v.split(',')
+            for item in items:
+                d = { "term": { k + '.name': item } }
+                f.append(d)
 
         query["query"]["bool"]["filter"] = filterQuery
 
         return query
+
+
+    def generateOptionQuery(self, keyName, options):
+
+        items = options[keyName].split(',')
+
+        if "全て" in items:
+            del options[keyName]
+            return None
+
+        query = self.generateShouldQuery(keyName, items)
+
+        del options[keyName]
+
+        return query
+
+    def generateShouldQuery(self, keyName, items):
+        query = {
+            "bool": {
+                "should": [
+                ]
+            }
+        }
+        f = query["bool"]["should"]
+        for s in items:
+            d = { "term": { keyName + ".name": s } }
+            f.append(d)
+
+        return query
+
 
     def generateShouldProjectsQuery(self, targetProjects):
         query = {
