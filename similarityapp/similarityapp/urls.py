@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('calcsim.urls')),
     path('search/', include('search.urls')),
+    path('auth/', include('account.urls'))
 ]
