@@ -169,6 +169,9 @@ export default {
   },
 
   created() {
+    const authService = getInstance()
+    if(authService.isAuthenticated)
+      this.redirect()
   },
 
   components: {
