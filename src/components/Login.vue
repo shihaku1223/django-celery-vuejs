@@ -149,6 +149,7 @@ export default {
         })
         .catch((e) => {
           console.log('failed ', e)
+          alert(e)
         })
     },
 

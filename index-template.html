@@ -9,6 +9,17 @@
     <title>Mantis Keyword Search System</title>
   </head>
   <body>
+
+    <script>
+      var isFirefox = typeof InstallTrigger !== 'undefined';
+      var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+      var isEdgeChromium = isChrome && (navigator.userAgent.indexOf("Edg") != -1);
+      var isEdge = !isIE && !!window.StyleMedia;
+      var isIE = /*@cc_on!@*/false || !!document.documentMode;
+      if(isIE || isEdge)
+        alert("Please use Firefox or Chrome.")
+
+    </script>
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
