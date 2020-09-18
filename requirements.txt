@@ -1,8 +1,5 @@
-tensorflow
 numpy
 mantis_soap
-tensorflow_hub
-tensorflow_text
 django
 celery
 django-cors-headers
