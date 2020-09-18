@@ -23,8 +23,9 @@ export const useAuth = () => {
           this.isAuthenticated = true
           return Promise.resolve(r.data)
         } catch(e) {
-          console.log(e)
-          return Promise.reject(e.response.data.detail)
+          if(e.response)
+            return Promise.reject(e.response.data.detail)
+          return Promise.reject(e)
         }
       },
 
@@ -35,8 +36,10 @@ export const useAuth = () => {
           this.isAuthenticated = true
           return Promise.resolve(r.data.access)
         } catch(e) {
-          console.log(e)
-          return Promise.reject(e.response.data.detail)
+          if(e.response)
+            return Promise.reject(e.response.data.detail)
+          return Promise.reject(e)
+
         }
       },
 
