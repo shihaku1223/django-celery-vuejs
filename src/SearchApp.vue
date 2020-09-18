@@ -2,7 +2,7 @@
   <v-app>
 
   <div>
-    <navigation-header-bar/>
+    <navigation-header-bar v-if="isAuthenticated"/>
     <router-view/>
   </div>
 
@@ -17,13 +17,21 @@
 
 import NavigationHeaderBar from '@/components/NavigationHeaderBar'
 
+import { getInstance } from './auth/index'
+
 export default {
 
   data: () => ({
   }),
 
   methods: {
+  },
 
+  computed: {
+    isAuthenticated() {
+      const authService = getInstance()
+      return authService.isAuthenticated
+    }
   },
 
   watch: {

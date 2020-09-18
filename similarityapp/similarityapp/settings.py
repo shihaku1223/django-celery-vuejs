@@ -59,8 +59,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_celery_results',
     'rest_framework',
+    'djoser',
     'corsheaders',
     'calcsim',
+    'account',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -75,6 +77,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
+    ],
+}
 
 ROOT_URLCONF = 'similarityapp.urls'
 

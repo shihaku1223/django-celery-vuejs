@@ -25,6 +25,10 @@ import { createRouter } from './router'
 import vuetify from '@/plugins/vuetify'
 import '@/css/app.css'
 
+
+import { AuthPlugin } from "./auth";
+Vue.use(AuthPlugin)
+
 Vue.config.productionTip = false
 
 Vue.use(VueAxios, axios.create(axiosConfig))
@@ -42,6 +46,5 @@ new Vue({
   template: '<SearchApp/>',
 
   created: () => {
-    console.log('created')
   }
 })

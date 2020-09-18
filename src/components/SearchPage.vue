@@ -41,14 +41,12 @@
           <label-combobox
             title="ステータス"
             :items="statusItems"
-            :default="statusDefault"
             v-model="selectedStatus"
             />
 
           <label-combobox
             title="解決状況"
             :items="resolutionItems"
-            :default="resolutionDefault"
             v-model="selectedResolution"
             />
 
@@ -112,7 +110,7 @@ export default {
       width: '100%',
       height: '100%'
     },
-    selectedStatus: "新規",
+    selectedStatus: ["全て"],
     statusItems: [
       "全て",
       "新規",
@@ -126,7 +124,7 @@ export default {
       "解決済",
       "完了",
     ],
-    selectedResolution: undefined,
+    selectedResolution: ["全て"],
     resolutionItems: [
       "全て",
       "対処中",
@@ -152,21 +150,45 @@ export default {
   },
 
   computed: {
+
+    optionStatus() {
+      if(localStorage.optionStatus)
+        return localStorage.optionStatus.split(',')
+
+      if(this.$store.state.search_result.searchOptions === undefined)
+        return undefined
+
+      return this.$store.state.search_result.searchOptions.status.split(',')
+    },
+
+    optionResolution() {
+      if(localStorage.optionResolution)
+        return localStorage.optionResolution.split(',')
+
+      if(this.$store.state.search_result.searchOptions === undefined)
+        return undefined
+
+      return this.$store.state.search_result.searchOptions.resolution.split(',')
+    },
+
     statusDefault() {
-      if(this.$store.state.search_result.searchOptions == undefined)
-        return "全て"
+      if(this.optionStatus == undefined)
+        return ["全て"]
         
-      return this.$store.state.search_result.searchOptions.status
+      return this.optionStatus
     },
+
     resolutionDefault() {
-      if(this.$store.state.search_result.searchOptions == undefined)
-        return "全て"
+      if(this.optionResolution == undefined)
+        return ["全て"]
         
-      return this.$store.state.search_result.searchOptions.resolution
+      return this.optionResolution
     },
+
     mantisUrl() {
       return mantisUrl
     },
+
     selectedProject: {
       set(value) {
         console.log(value)
@@ -185,12 +207,19 @@ export default {
   methods: {
     updateOptions() {
       let options = {
-        status: this.selectedStatus,
-        resolution: this.selectedResolution,
+        status: this.selectedStatus.join(),
+        resolution: this.selectedResolution.join(),
       }
-      console.log(options)
       this.$store.dispatch(UPDATE_SEARCH_OPTIONS, options)
+
+      localStorage.optionStatus = options.status
+      localStorage.optionResolution = options.resolution
     }
+  },
+
+  created() {
+    this.selectedStatus = this.statusDefault
+    this.selectedResolution = this.resolutionDefault
   },
 
   mounted() {
