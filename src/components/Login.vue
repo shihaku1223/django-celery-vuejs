@@ -35,6 +35,7 @@
             <v-text-field
               :style="textFieldStyle"
               v-model="password"
+              type="password"
               prepend-inner-icon="mdi-lock"
               dense
               hide-details
