@@ -63,16 +63,15 @@ export default {
     userName() {
 
       if(this.result.reporter != null) {
-        if(this.result.reporter.real_name == null) {
-          return this.result.reporter.name
-        }
-        return this.result.reporter.real_name
+        let reporter_name = this.getUserName(this.result.reporter)
+        if(reporter_name != null)
+          return reporter_name
       }
 
       if(this.result.handler != null) {
-        if(this.result.handler.real_name == null)
-          return this.result.handler.name
-        return this.result.handler.real_name
+        let handler_name = this.getUserName(this.result.handler)
+        if(handler_name != null)
+          return handler_name
       }
 
       return '未指定'
@@ -84,6 +83,15 @@ export default {
   },
 
   methods: {
+    getUserName(obj) {
+      if(obj.real_name == null) {
+        if(obj.name == null)
+          return null
+        return obj.name
+      }
+      return obj.real_name
+    },
+
     searchKeywordIndex(s, key) {
       if(typeof s !== "string") {
         return undefined
