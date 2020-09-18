@@ -210,7 +210,8 @@ export default {
     },
 
     scrollToBottom () {
-      this.$refs.scroller.scrollToBottom()
+      if(this.$refs.scroller)
+        this.$refs.scroller.scrollToBottom()
     },
 
     async scrollNextResult() {

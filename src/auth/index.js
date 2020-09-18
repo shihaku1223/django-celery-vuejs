@@ -21,8 +21,21 @@ export const useAuth = () => {
         try {
           let r = await this.axios.post('auth/token/', auth)
           this.isAuthenticated = true
+          return Promise.resolve(r.data)
+        } catch(e) {
+          console.log(e)
+          return Promise.reject(e.response.data.detail)
+        }
+      },
+
+      async refresh(token) {
+        try {
+          let r = await this.axios.post('auth/token/refresh/',
+            { 'refresh': token })
+          this.isAuthenticated = true
           return Promise.resolve(r.data.access)
         } catch(e) {
+          console.log(e)
           return Promise.reject(e.response.data.detail)
         }
       },

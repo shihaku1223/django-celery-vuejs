@@ -143,8 +143,9 @@ export default {
         'username': this.username,
         'password': this.password
       })
-        .then((token) => {
-          localStorage.token = token
+        .then((data) => {
+          localStorage.token = data.access
+          localStorage.refresh = data.refresh
           this.redirect()
         })
         .catch((e) => {
