@@ -202,6 +202,7 @@ export default {
         this.searchOptions)
       this.fetching = false
 
+      this.fetchedResult = []
       this.hitCount = response.data.total
       this.scrollId = response.data.scroll_id
 
