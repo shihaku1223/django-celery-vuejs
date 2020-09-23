@@ -16,6 +16,10 @@ services:
   app:
     container_name: searchapp
     image: searchapp
+    environment:
+      - USERNAME=admin
+      - PASSWORD=integadmin
+      - EMAIL=sibo_wang@ot.olympus.co.jp
     ports:
       - "8090:8000"
     depends_on:
