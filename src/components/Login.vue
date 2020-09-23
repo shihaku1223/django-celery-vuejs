@@ -156,7 +156,7 @@ export default {
     redirect() {
       if(this.nextUrl === undefined)
         this.$router.push({
-          name: 'home',
+          name: 'mkss_home',
         }).catch(() => {})
       else {
         this.$router.push({

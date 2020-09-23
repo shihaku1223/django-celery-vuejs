@@ -166,7 +166,7 @@ export default {
 
     onOptionClick() {
       this.$router.push({
-        name: 'home',
+        name: 'mkss_home',
       }).catch(() => {})
     },
 

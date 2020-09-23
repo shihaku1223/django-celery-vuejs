@@ -9,6 +9,8 @@ let About = {
   template: '<h2>About</h2>'
 }
 
+import CalcSimApp from '../CalcSimApp'
+import SearchApp from '../SearchApp'
 import SearchPage from '@/components/SearchPage'
 import SearchResultPage from '@/components/SearchResultPage'
 import Login from '@/components/Login'
@@ -22,24 +24,28 @@ let createRouter = () => {
       props: true,
     },
     {
-      path: '/',
-      name: 'home',
-      component: SearchPage,
+      path: '/calcsim',
+      name: 'calcsim',
+      component: CalcSimApp,
       meta: {
         requiresAuth: true,
       },
     },
     {
-      path: '/search',
-      name: 'search',
-      component: SearchResultPage,
+      path: '/mkss',
+      component: SearchApp,
+      children: [
+        { path: '', name: 'mkss_home', component: SearchPage },
+        { path: 'search', name: 'search', component: SearchResultPage,
+          props: (route) => ({
+            query: route.query.q,
+            projects: route.query.p
+          })
+        },
+      ],
       meta: {
         requiresAuth: true,
       },
-      props: (route) => ({
-        query: route.query.q,
-        projects: route.query.p
-      })
     },
   ]
 
