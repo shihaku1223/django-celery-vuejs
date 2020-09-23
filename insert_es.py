@@ -1,5 +1,6 @@
 #!env python3
 
+import sys
 import argparse
 import json, zeep
 from mantis_soap.Connector import Connector
@@ -27,11 +28,21 @@ if __name__ == '__main__':
     parser.add_argument('--project', type=str,
         help='specify the project name to search from')
 
+    parser.add_argument('--id', type=int, default=None,
+        help='specify the mantis id then insert to es')
+
     args = parser.parse_args()
 
     url = "http://osoft-de-c.olympus.co.jp/mantis/ipf3/app/api/soap/mantisconnect.php?wsdl"
     mantisConnector = Connector(url, args.user, args.password)
     mantisConnector.connect()
+
+    if args.id is not None:
+        issue = mantisConnector.getIssue(args.id)
+        print(issue)
+        obj = zeep.helpers.serialize_object(issue)
+        insert_ticket_and_update([obj])
+        sys.exit(0)
 
     projectId = mantisConnector.getProjectId(args.project)
 

@@ -41,6 +41,8 @@
 
 <script>
 
+import { getInstance } from '../auth/index'
+
 import {
   TARGET_PROJECTS,
   QUERY_STRING
@@ -118,10 +120,21 @@ export default {
       }).catch(() => {})
     },
 
+    refresh(refresh) {
+      const authService = getInstance()
+      authService.refresh(refresh)
+        .then((token) => {
+        localStorage.token = token
+      })
+    },
+
     async onEnter() {
       console.log(this.queryString)
       console.log(this.projectString)
       console.log(this.searchOptions)
+
+      if(localStorage.refresh)
+        this.refresh(localStorage.refresh)
 
       this.$router.push({
         name: 'search',

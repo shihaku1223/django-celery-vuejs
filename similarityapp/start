@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [ "$USERNAME" ] && [ "$PASSWORD" ] && [ "$EMAIL" ]; then
+    export DJANGO_SUPERUSER_USER=$USERNAME
+    export DJANGO_SUPERUSER_PASSWORD=$PASSWORD
+    export DJANGO_SUPERUSER_EMAIL=$EMAIL
+else
+    export DJANGO_SUPERUSER_USER=admin
+    export DJANGO_SUPERUSER_PASSWORD=admin
+    export DJANGO_SUPERUSER_EMAIL=admin@noreply.com
+fi
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser \
+    --username=$DJANGO_SUPERUSER_USER \
+    --email=$DJANGO_SUPERUSER_EMAIL --no-input
+python manage.py runserver 0:8000

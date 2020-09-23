@@ -1,8 +1,5 @@
-tensorflow
 numpy
 mantis_soap
-tensorflow_hub
-tensorflow_text
 django
 celery
 django-cors-headers
@@ -14,3 +11,5 @@ django-rest-framework
 pymongo
 django-jsonfield
 elasticsearch>=7.0.0,<8.0.0
+djoser
+djangorestframework-simplejwt
