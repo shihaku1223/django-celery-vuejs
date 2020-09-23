@@ -22,9 +22,9 @@ import SearchApp from './SearchApp'
 import { createStore } from '@/store/index'
 import { createRouter } from './router'
 
-import '@/css/app.css'
 import '@/css/purple3.min.css'
 import vuetify from '@/plugins/vuetify'
+import '@/css/app.css'
 
 import { AuthPlugin } from "./auth";
 Vue.use(AuthPlugin)
