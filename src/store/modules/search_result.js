@@ -7,7 +7,7 @@ import {
 
 export default {
   state: {
-    queryString: undefined,
+    queryString: "",
     searchResult: [],
     targetProjects: [],
     searchOptions: undefined,
