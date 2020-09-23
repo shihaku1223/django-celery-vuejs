@@ -7,7 +7,7 @@
 
         <h2>ログイン</h2>
 
-        <form>
+        <form @submit.prevent="onLogin">
 
           <div class="form-group">
             <div class="hk-label" style="width: 100px">
@@ -43,9 +43,7 @@
             ></v-text-field>
  
           </div>
-          <button class="hk-button--primary btn-block"
-            @click="onLogin"
-          >
+          <button type="submit" class="hk-button--primary btn-block">
             Login
           </button>
         </form>
