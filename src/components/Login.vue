@@ -107,7 +107,7 @@
   width: 100%;
   height: 100%;
   color: white;
-  position: absolute;
+  position: fixed;
 
   display: flex;
   justify-content: center;
