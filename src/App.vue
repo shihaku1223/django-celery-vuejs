@@ -143,7 +143,7 @@
 
 .content {
   position: relative;
-  overflow-y: scroll;
+  overflow: scroll;
   width: 100%;
   height: calc(100vh - 70px);
 }
@@ -537,7 +537,9 @@ export default {
           this.defaultCheckedNames)
 
       if(localStorage.selectedProject)
-        this.selectedProject = localStorage.selectedProject.split(',')
+        this.selectedProject = localStorage.selectedProject
+          .split(',')
+          .map((s) => parseInt(s))
 
     },
   },
