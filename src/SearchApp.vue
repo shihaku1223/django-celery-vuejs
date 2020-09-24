@@ -1,12 +1,9 @@
 <template>
-  <v-app>
 
   <div>
     <navigation-header-bar v-if="isAuthenticated"/>
     <router-view/>
   </div>
-
-  </v-app>
 </template>
 
 <style scoped>

@@ -13,6 +13,6 @@ PROJECT_LIST=('CV2K製品' 'IPF-3 OTV製品' 'VE2製品試験' 'ツール' \
 #PROJECT_LIST=('CV2K製品')
 
 for project in "${PROJECT_LIST[@]}"; do
-    echo $project
-    python3 $path/insert_es.py --user $USER --password $PASS --project "$project" 2>&1 | tee /sync_log/${project}_log
+    echo "${project}"_log
+    python3 $path/insert_es.py --user $USER --password $PASS --project "$project" 2>&1 | tee /sync_log/"${project}"_log
 done

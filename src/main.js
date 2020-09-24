@@ -18,7 +18,7 @@ import Loading from 'vue-loading-overlay'
 import 'vue-loading-overlay/dist/vue-loading.css'
 Vue.use(Loading)
 
-import SearchApp from './SearchApp'
+import App from './App'
 import { createStore } from '@/store/index'
 import { createRouter } from './router'
 
@@ -42,8 +42,8 @@ new Vue({
   el: '#app',
   store: store,
   router: router,
-  components: { SearchApp },
-  template: '<SearchApp/>',
+  components: { App },
+  template: '<App/>',
 
   created: () => {
   }
