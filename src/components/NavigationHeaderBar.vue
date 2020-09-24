@@ -36,7 +36,12 @@
         <button class="hk-button-sm--primary"
           @click="onSwitch"
         >
-          <v-icon>mdi-camera-switch-outline</v-icon>
+          類似計算に移動
+        </button>
+        <button class="hk-button-sm--primary"
+          @click="logout"
+        >
+          ログアウト
         </button>
       </div>
     </div>
@@ -100,11 +105,12 @@ import {
 
 import SearchMixin from '../mixins/search'
 import projectTreeItem from '@/constants/projectTreeItem'
+import LogoutMixin from '../mixins/logout'
 
 export default {
   name: 'navigation-header-bar',
 
-  mixins: [ SearchMixin ],
+  mixins: [ SearchMixin, LogoutMixin ],
 
   data: () => ({
     keywordFieldFocus: undefined,
@@ -177,14 +183,6 @@ export default {
       this.$router.push({
         name: 'mkss_home',
       }).catch(() => {})
-    },
-
-    refresh(refresh) {
-      const authService = getInstance()
-      authService.refresh(refresh)
-        .then((token) => {
-        localStorage.token = token
-      })
     },
 
     onSwitch() {

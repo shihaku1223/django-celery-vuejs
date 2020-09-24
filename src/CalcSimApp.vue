@@ -10,8 +10,15 @@
           <button class="hk-button-sm--primary"
             @click="onSwitch"
           >
-            <v-icon>mdi-camera-switch-outline</v-icon>
+          キーワード検索に移動
           </button>
+
+          <button class="hk-button-sm--primary"
+            @click="logout"
+          >
+          ログアウト
+          </button>
+
         </div>
       </div>
     </div>
@@ -195,7 +202,11 @@ import ScoreTableRow from '@/components/ScoreTableRow'
 import SelectMenu from '@/components/SelectMenu'
 import CheckboxLabel from '@/components/CheckboxLabel'
 
+import LogoutMixin from './mixins/logout'
+
 export default {
+
+  mixins: [ LogoutMixin ],
 
   data: () => ({
     taskData: 'Hello',
@@ -491,6 +502,9 @@ export default {
     },
 
     async onClick(e) {
+      if(localStorage.refresh)
+        this.refresh(localStorage.refresh)
+
       if(this.selectedProject.length == 0)
         return
 
