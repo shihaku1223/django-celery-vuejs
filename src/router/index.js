@@ -18,6 +18,10 @@ import Login from '@/components/Login'
 let createRouter = () => {
   const routes = [
     {
+      path: '/',
+      redirect: { name: 'mkss_home' }
+    },
+    {
       path: '/login',
       name: 'login',
       component: Login,

@@ -1,6 +1,6 @@
 <template>
   <div class='navigation bg-purple'>
-    <div>
+    <div class="title">
      Mantis Keyword Search System
 
       <div class="content">
@@ -33,6 +33,11 @@
         <button v-if="showOptionButton" class="hk-button-sm--primary"
           @click="onOptionClick">オプション
         </button>
+        <button class="hk-button-sm--primary"
+          @click="onSwitch"
+        >
+          <v-icon>mdi-camera-switch-outline</v-icon>
+        </button>
       </div>
     </div>
   </div>
@@ -42,6 +47,10 @@
 
 .content {
   position: relative;
+}
+
+.title {
+  font-size: 24px;
 }
 
 .tooltiptext {
@@ -139,7 +148,7 @@ export default {
       return projectTreeItem
     },
     showOptionButton() {
-      return this.$route.name != "home"
+      return this.$route.name != "mkss_home"
     }
   },
 
@@ -176,6 +185,10 @@ export default {
         .then((token) => {
         localStorage.token = token
       })
+    },
+
+    onSwitch() {
+      this.$router.push({name: 'calcsim' })
     },
 
     async onEnter() {

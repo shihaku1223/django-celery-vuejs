@@ -1,7 +1,19 @@
 <template>
   <div>
     <div class='navigation bg-purple'>
-       Similarity Calculator 
+      <div class="title">
+        Similarity Calculator 
+
+
+        <div class="title_content">
+          <div class="dark-gray f4 normal mt0 bb b--silver" />
+          <button class="hk-button-sm--primary"
+            @click="onSwitch"
+          >
+            <v-icon>mdi-camera-switch-outline</v-icon>
+          </button>
+        </div>
+      </div>
     </div>
 
 
@@ -135,14 +147,18 @@
 
 <style scoped>
 
+.title {
+  font-size: 24px;
+}
+
 .navigation {
   position: sticky;
   top: 0;
   color: white;
   z-index: 1;
   height: 70px;
-
   display: flex;
+
   justify-content: center;
   align-items: center;
   font-size: 14px;
@@ -152,6 +168,11 @@
 .container {
   width: 100%;
   display: flex;
+}
+
+.title_content {
+  width: 400px;
+  position: relative;
 }
 
 .content {
@@ -463,6 +484,10 @@ export default {
           let result = this.getSelectedProjectNames(item.children, projectNames)
         }
       }
+    },
+
+    onSwitch() {
+      this.$router.push({name: 'mkss_home' })
     },
 
     async onClick(e) {
