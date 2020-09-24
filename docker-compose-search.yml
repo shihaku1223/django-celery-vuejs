@@ -25,6 +25,10 @@ services:
     depends_on:
       - es
 
+  sync:
+    container_name: sync_mantis
+    image: sync_mantis_es
+
   es:
     container_name: es
     image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1

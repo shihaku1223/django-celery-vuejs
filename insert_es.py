@@ -6,7 +6,7 @@ import json, zeep
 from mantis_soap.Connector import Connector
 
 from elasticsearch import Elasticsearch
-es = Elasticsearch("localhost:9200")
+es = Elasticsearch("es:9200")
 
 def insert_ticket_and_update(objs):
     for obj in objs:
