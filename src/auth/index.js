@@ -17,6 +17,10 @@ export const useAuth = () => {
 
     methods: {
 
+      logout() {
+        this.isAuthenticated = false
+      },
+
       async login(auth) {
         try {
           let r = await this.axios.post('auth/token/', auth)
